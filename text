@@ -1,0 +1,64 @@
+public void throwAxe() {
+        Axe axe = player.getAxe();
+        if (axe != null) {
+            if (!axe.isThrowing() && axe.getVidas() > 0) {
+                axe.setThrowing(true);
+                int x = player.getX();
+                int y = player.getY();
+                int endX = x;
+                int endY = y;
+                switch (lastDirection) {
+                    case UP:
+                        endX--;
+                        break;
+                    case DOWN:
+                        endX++;
+                        break;
+                    case LEFT:
+                        endY--;
+                        break;
+                    case RIGHT:
+                        endY++;
+                        break;
+                    default:
+                        break;
+                }
+                moveAxe(x, y, endX, endY); // Chamada corrigida para moveAxe()
+            }
+        }
+    }
+    public void moveAxe(int startX, int startY, int endX, int endY) {
+        Thread thread = new Thread() {
+            public void run() {
+                int currentX = startX;
+                int currentY = startY;
+                while (currentX != endX || currentY != endY) {
+                    if (currentX < endX) {
+                        currentX++;
+                    } else if (currentX > endX) {
+                        currentX--;
+                    }
+                    if (currentY < endY) {
+                        currentY++;
+                    } else if (currentY > endY) {
+                        currentY--;
+                    }
+                    // Atualize a posição do machado
+                    player.getAxe().setX(currentX);
+                    player.getAxe().setY(currentY);
+                    repaint(); // Redesenha o painel para mostrar a nova posição do machado
+                    try {
+                        Thread.sleep(100); // Aguarde 100 milissegundos entre cada movimento
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                // Resetar o machado para a posição do jogador
+                player.getAxe().setX(startX);
+                player.getAxe().setY(startY);
+                player.getAxe().setThrowing(false);
+                repaint(); // Redesenha o painel para mostrar o machado de volta à posição do jogador
+            }
+        };
+        thread.start(); // Inicia a thread
+    }
