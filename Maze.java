@@ -1,13 +1,8 @@
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.ArrayList;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import Elements.*;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import java.awt.Font;
 
 public class Maze extends JPanel implements KeyListener, Runnable{
     private JFrame mainFrame;
@@ -20,8 +15,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     private static final int DESCRIPTION_OFFSET_Y = 20;
     private final int  height;
     private Direction lastDirection;
-    private boolean shooting;
-    
+
 
     public Maze() {
         this.puzzle = new Mapa();
@@ -92,22 +86,12 @@ public class Maze extends JPanel implements KeyListener, Runnable{
             }
         }
 
-
-    
-        // Desenhar o jogador
         drawPlayer(g);
-    
-        // Desenhar os corações de vida
         drawHeart(g);
         
     
     }
-    
-    // Método para desenhar o machado
-    private void drawAxe(Graphics g, int x, int y) {
-        g.setColor(Color.RED);
-        g.fillOval(bulletX, bulletY, BULLET_SIZE, BULLET_SIZE);
-    }
+
 
     private void drawPlayer(Graphics g) {
         g.setColor(Color.BLACK);
@@ -193,13 +177,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         }
         repaint();
     }
-    private void shootGun(){
-        if(player.hasAmmo()){
 
-        }
-    }
-
-    
 
     @Override
     public void keyTyped(KeyEvent e) {
