@@ -37,6 +37,11 @@ public class Maze extends JPanel implements KeyListener, Runnable{
 
     private void initializeWindow() {
         this.mainFrame = new JFrame("Maze Solver");
+        IntroductionDialog dialog = new IntroductionDialog(mainFrame);
+        dialog.setModal(true);
+        dialog.setVisible(true);
+       
+         
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.add(this);
         mainFrame.setSize(800, 450);
@@ -148,7 +153,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                 player.setY(y);
             }
             else if(c == 'L'){
-                VISIBILITY_RADIUS+=2;
+                VISIBILITY_RADIUS+=1;
                 puzzle.setLocation(x, y, '.');
             }
             else if(c == 'M'){
