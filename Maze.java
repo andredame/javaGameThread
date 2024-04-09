@@ -28,6 +28,10 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     private BufferedImage pathImage;
     private BufferedImage playerImage;
     private BufferedImage houseImage;
+    private BufferedImage carImage;
+    private BufferedImage lakeImage;
+    private BufferedImage bridgeImage;
+    private BufferedImage lumberjackImage;
 
     private final int  height;
     private Direction lastDirection;
@@ -50,6 +54,10 @@ public class Maze extends JPanel implements KeyListener, Runnable{
             pathImage = ImageIO.read(new File("./assets/stone.png"));
             playerImage = ImageIO.read(new File("./assets/player.png"));
             houseImage = ImageIO.read(new File("./assets/house.png"));
+            carImage = ImageIO.read(new File("./assets/car_crash.png"));
+            lakeImage = ImageIO.read(new File("./assets/lake.png"));
+            bridgeImage = ImageIO.read(new File("./assets/bridge_lake.png"));
+            lumberjackImage = ImageIO.read(new File("./assets/lumberjack.png"));
             
         } catch (IOException e) {
             e.printStackTrace();
@@ -106,7 +114,15 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                         else if(c =='H'){
                             g.drawImage(houseImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
                         }
-                        
+                        else if(c == 'C') {
+                            g.drawImage(carImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                        } else if(c == 'W') {
+                            g.drawImage(lakeImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                        }  else if(c == 'B') {
+                            g.drawImage(bridgeImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                        }  else if(c == 'X') {
+                            g.drawImage(lumberjackImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                        }
                     }
                     
                 } 
