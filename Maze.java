@@ -1,5 +1,10 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import Elements.*;
 
@@ -8,14 +13,23 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     private JFrame mainFrame;
     private Player player;
     private Mapa puzzle;
-    private static int VISIBILITY_RADIUS = 3; // Defina o raio de visão do jogador aqui
-    private static final int CELL_SIZE = 20;
+    private static int VISIBILITY_RADIUS = 2; // Defina o raio de visão do jogador aqui
+    private static final int CELL_SIZE = 30;
     private static final int HORIZONTAL_OFFSET = 0;
     private static final int VERTICAL_OFFSET = 0;
     private static final int DESCRIPTION_OFFSET_Y = 20;
+
+     // Declare as variáveis para armazenar as imagens
+     private BufferedImage treeImage;
+     private BufferedImage axeImage;
+     private BufferedImage lampImage;
+     private BufferedImage mapImage;
+    private BufferedImage wallImage;
+    private BufferedImage pathImage;
+    private BufferedImage playerImage;
+
     private final int  height;
     private Direction lastDirection;
-
 
     public Maze() {
         this.puzzle = new Mapa();
@@ -23,6 +37,22 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         initializeWindow();
         this.height = puzzle.getHeight();
         this.lastDirection= Direction.NONE;
+
+
+        // Carregue as imagens durante a inicialização
+        try {
+            treeImage = ImageIO.read(new File("./assets/tree.png"));
+            axeImage = ImageIO.read(new File("./assets/axe.png"));
+            lampImage = ImageIO.read(new File("./assets/lamp.png"));
+            mapImage = ImageIO.read(new File("./assets/map.png"));
+            wallImage = ImageIO.read(new File("./assets/path.png"));
+            pathImage = ImageIO.read(new File("./assets/stone.png"));
+            playerImage = ImageIO.read(new File("./assets/player.png"));
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void initializeWindow() {
@@ -35,8 +65,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         mainFrame.setVisible(true);
 
     }
-
-    @Override
+     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         int width = puzzle.getWidth();
@@ -44,43 +73,40 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         int playerX = player.getX();
         int playerY = player.getY();
 
-    
         // Desenhar o labirinto
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 char c = puzzle.getLocation(row, col);
-    
+
                 int distance = Math.abs(row - playerX) + Math.abs(col - playerY);
-    
+
                 if (distance <= VISIBILITY_RADIUS) {
+                    g.setColor(Color.WHITE);
+                    g.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    
+
                     if (c == '#') {
-                        g.setColor(Color.BLACK);
-                        g.drawString("■", col * CELL_SIZE , row * CELL_SIZE );
-                    } else if (c == 'V') {
-                        g.setColor(Color.GREEN);
-                        Font fonte = new Font("Segoe UI Emoji", Font.PLAIN, 20); // Escolha uma fonte que suporte emojis
-                        g.setFont(fonte);
-                        g.drawString("🌳", col * CELL_SIZE, row * CELL_SIZE);
-                    } else if (c == 'A') {
-                        g.setColor(Color.BLACK);
-                        Font fonte = new Font("Segoe UI Emoji", Font.PLAIN, 15); // Escolha uma fonte que suporte emojis
-                        g.setFont(fonte);
-                        g.drawString("🪓", col * CELL_SIZE , row * CELL_SIZE );
-                    } else if(c =='L'){
-                        g.setColor(Color.BLACK);
-                        g.drawString("🔦", col * CELL_SIZE , row * CELL_SIZE );
+                        g.drawImage(wallImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                    } else{
+                        g.drawImage(pathImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                        if(c == 'V'){
+                            g.drawImage(treeImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                        }
+                        else if(c == 'A'){
+                            g.drawImage(axeImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                        }
+                        else if(c == 'L'){
+                            g.drawImage(lampImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                        }
+                        else if(c == 'M'){
+                            g.drawImage(mapImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                        }
                     }
-                    else if(c =='M'){
-                        //map
-                        g.setColor(Color.BLACK);
-                        g.drawString("🗺️", col * CELL_SIZE + HORIZONTAL_OFFSET, row * CELL_SIZE + VERTICAL_OFFSET);
-                    }
-                    else {
-                        g.setColor(Color.WHITE);
-                        g.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    }
-                } else {
-                    g.setColor(Color.GRAY);
+                    
+                } 
+                else {
+                    // Desenhe um quadrado marrom para indicar a área fora do raio de visão
+                    g.setColor(new Color(50, 54, 51)); // Marrom
                     g.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                 }
             }
@@ -88,16 +114,13 @@ public class Maze extends JPanel implements KeyListener, Runnable{
 
         drawPlayer(g);
         drawHeart(g);
-        
-    
     }
 
 
     private void drawPlayer(Graphics g) {
-        g.setColor(Color.BLACK);
-        Font fonte = new Font("Segoe UI Emoji", Font.PLAIN, 10); // Escolha uma fonte que suporte emojis
-        g.setFont(fonte);
-        g.drawString(String.valueOf(player.getSymbol()), player.getY() * CELL_SIZE, player.getX() * CELL_SIZE);
+        int playerX = player.getX();
+        int playerY = player.getY();
+        g.drawImage(playerImage, playerY * CELL_SIZE, playerX * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
     }
 
     private void drawHeart(Graphics g){
@@ -113,9 +136,6 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         g.drawString( coracoes, 20, height * CELL_SIZE + DESCRIPTION_OFFSET_Y);
 
     }
-
-
-
         @Override
     public void keyPressed(KeyEvent e) {
         int x = player.getX();
@@ -152,6 +172,9 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         
         // Agora movemos o jogador com as novas coordenadas calculadas
         movePlayer(x, y);
+    }
+    public int getCellSize(){
+        return CELL_SIZE;
     }
 
     public void movePlayer(int x, int y){

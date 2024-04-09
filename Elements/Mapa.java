@@ -7,6 +7,14 @@ import java.io.IOException;
 public class Mapa implements Runnable{
     private char[][] puzzle;
         
+    public char[][] getPuzzle() {
+        return puzzle;
+    }
+
+    public void setPuzzle(char[][] puzzle) {
+        this.puzzle = puzzle;
+    }
+
     public Mapa(){
         createPuzzle();
     }
