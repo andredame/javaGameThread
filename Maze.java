@@ -31,6 +31,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     private BufferedImage carImage;
     private BufferedImage lakeImage;
     private BufferedImage bridgeImage;
+    private BufferedImage lumberjackImage;
 
     private final int  height;
     private Direction lastDirection;
@@ -56,6 +57,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
             carImage = ImageIO.read(new File("./assets/car_crash.png"));
             lakeImage = ImageIO.read(new File("./assets/lake.png"));
             bridgeImage = ImageIO.read(new File("./assets/bridge_lake.png"));
+            lumberjackImage = ImageIO.read(new File("./assets/lumberjack.png"));
             
         } catch (IOException e) {
             e.printStackTrace();
@@ -118,6 +120,8 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                             g.drawImage(lakeImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
                         }  else if(c == 'B') {
                             g.drawImage(bridgeImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                        }  else if(c == 'X') {
+                            g.drawImage(lumberjackImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
                         }
                     }
                     
