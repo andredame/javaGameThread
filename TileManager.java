@@ -1,65 +1,51 @@
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.imageio.ImageIO;
 
 public class TileManager {
-    Maze gp;
-    BufferedImage[] images; // Array para armazenar as imagens
+    private Map<String, BufferedImage> tileImages;
 
-    public TileManager(Maze gp) {
-        this.gp = gp;
-        images = new BufferedImage[128]; // Ajuste o tamanho do array conforme necessário
-        getTileImages(); // Carrega as imagens
-    }
-
-    public void getTileImages() {
+    public TileManager() {
+        tileImages = new HashMap<>();
+        // Adicionar imagens aos símbolos correspondentes
         try {
-            // Carregar imagens para diferentes elementos do labirinto
-            images['#'] = ImageIO.read(getClass().getResourceAsStream("./assets/path.png"));
-            images['.'] = ImageIO.read(getClass().getResourceAsStream("./assets/stone.png"));
-            images['V'] = ImageIO.read(getClass().getResourceAsStream("./assets/tree.png"));
-            images['L'] = ImageIO.read(getClass().getResourceAsStream("./assets/lamp.png"));
-            images['A'] = ImageIO.read(getClass().getResourceAsStream("./assets/axe.png"));
+            BufferedImage treeImage = ImageIO.read(new File("./assets/tree.png"));
+            BufferedImage axeImage = ImageIO.read(new File("./assets/axe.png"));
+            BufferedImage lampImage = ImageIO.read(new File("./assets/lamp.png"));
+            BufferedImage mapImage = ImageIO.read(new File("./assets/map.png"));
+            BufferedImage houseImage = ImageIO.read(new File("./assets/house.png"));
+            BufferedImage carImage = ImageIO.read(new File("./assets/car_crash.png"));
+            BufferedImage lakeImage = ImageIO.read(new File("./assets/lake.png"));
+            BufferedImage bridgeImage = ImageIO.read(new File("./assets/bridge_lake.png"));
+            BufferedImage lumberjackImage = ImageIO.read(new File("./assets/lumberjack.png"));
+            BufferedImage playerImage = ImageIO.read(new File("./assets/player.png"));
+            BufferedImage stoneImage = ImageIO.read(new File("./assets/stone.png"));
 
-            // Adicione outras imagens conforme necessário para os outros elementos do labirinto
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    public void drawWall(Graphics2D g, int x, int y) {
-        g.drawImage(images['#'], x * gp.getCellSize(), y * gp.getCellSize(), gp.getCellSize(), gp.getCellSize(), null);
-    }
-
-    public void drawLamp(Graphics2D g, int x, int y) {
-        g.drawImage(images['L'], x * gp.getCellSize(), y * gp.getCellSize(), gp.getCellSize(), gp.getCellSize(), null);
-    }
-public void draw(Graphics2D g, char[][] maze) {
-    int width = maze[0].length;
-    int height = maze.length;
-
-    // Desenhar o chão primeiro
-    for (int row = 0; row < height; row++) {
-        for (int col = 0; col < width; col++) {
-            char c = maze[row][col];
-            if (c == '.' || c == '#') {
-                if (images[c] != null) {
-                    g.drawImage(images[c], col * gp.getCellSize(), row * gp.getCellSize(), gp.getCellSize(), gp.getCellSize(), null);
-                }
-            }
+            tileImages.put("#", treeImage);
+            tileImages.put("T", treeImage);
+            tileImages.put("A", axeImage);
+            tileImages.put("L", lampImage);
+            tileImages.put("M", mapImage);
+            tileImages.put("H", houseImage);
+            tileImages.put("C", carImage);
+            tileImages.put("W", lakeImage);
+            tileImages.put("B", bridgeImage);
+            tileImages.put("X", lumberjackImage);
+            tileImages.put("P", playerImage);
+            tileImages.put(".", stoneImage);
+        } catch (IOException e) {
+            System.out.println("Erro ao carregar imagens dos tiles" + e);
         }
     }
 
-    // Desenhar os elementos que aparecem sobre o chão
-    for (int row = 0; row < height; row++) {
-        for (int col = 0; col < width; col++) {
-            char c = maze[row][col];
-            if (c != '.' && c != '#') {
-                if (images[c] != null) {
-                    g.drawImage(images[c], col * gp.getCellSize(), row * gp.getCellSize(), gp.getCellSize(), gp.getCellSize(), null);
-                }
-            }
-        }
+    public void addTileImage(String symbol, BufferedImage image) {
+        tileImages.put(symbol, image);
     }
-}
 
+    public BufferedImage getTileImage(String symbol) {
+        return tileImages.get(symbol);
+    }
 }
