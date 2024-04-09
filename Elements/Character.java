@@ -42,4 +42,5 @@ public abstract class Character{
     public Puzzle getPuzzle() {
         return puzzle;
     }
+    public abstract boolean isAlive();
 }

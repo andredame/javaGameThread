@@ -63,7 +63,11 @@ public class Puzzle implements Runnable{
         }
         
     }
-
+     
+    //ver se é pisavel ou não
+    public boolean isWalkable(int x, int y) {
+        return puzzle[x][y] == '.' || puzzle[x][y] == 'X';
+    }
     
 
     @Override
