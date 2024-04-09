@@ -89,7 +89,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                         g.drawImage(wallImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
                     } else{
                         g.drawImage(pathImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
-                        if(c == 'V'){
+                        if(c == 'T'){
                             g.drawImage(treeImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
                         }
                         else if(c == 'A'){
