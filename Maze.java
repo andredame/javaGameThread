@@ -106,6 +106,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                         else if(c =='h'){
                             g.drawImage(houseImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
                         }
+                        
                     }
                     
                 } 
