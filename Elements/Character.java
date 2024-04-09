@@ -1,14 +1,17 @@
 package Elements;
+
 public abstract class Character{
     private int x;
     private int y;
     private int vidas;
     private char symbol;
-    public Character(int x, int y, int vidas, char symbol){
+    private Puzzle puzzle;
+    public Character(int x, int y, int vidas, char symbol,Puzzle puzzle ){
         this.x = x;
         this.y = y;
         this.vidas = vidas;
         this.symbol = symbol;
+        this.puzzle = puzzle;
     }
     public void setVidas(int vidas) {
         this.vidas = vidas;
@@ -30,5 +33,13 @@ public abstract class Character{
     }
     public char getSymbol() {
         return symbol;
+    }
+
+    public void setPuzzle(Puzzle puzzle) {
+        this.puzzle = puzzle;
+    }
+
+    public Puzzle getPuzzle() {
+        return puzzle;
     }
 }

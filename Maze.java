@@ -1,11 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import Elements.*;
 import Elements.Character;
@@ -13,7 +9,7 @@ import Elements.Character;
 
 public class Maze extends JPanel implements KeyListener, Runnable{
     private JFrame mainFrame;
-    private Mapa puzzle;
+    private Puzzle puzzle;
     private static int VISIBILITY_RADIUS = 50; // Defina o raio de visão do jogador aqui
     private static final int CELL_SIZE = 30;
     private static final int DESCRIPTION_OFFSET_Y = 20;
@@ -23,15 +19,13 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     private Direction lastDirection;
 
     public Maze() {
-        this.puzzle = new Mapa();
+        this.puzzle = new Puzzle();
         this.tileManager = new TileManager();
         this.characters = new ArrayList<>();
         createCharacters();
         initializeWindow();
         this.height = puzzle.getHeight();
         this.lastDirection= Direction.NONE;
-
-
     }
 
     private void initializeWindow() {
@@ -77,28 +71,27 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                 }
             }
         }
-        drawLumberJack(g);
-        drawPlayer(g);
+        drawCharacters(g);
         drawHeart(g);
     }
     private void createCharacters(){
         this.characters = new ArrayList<>();
-        this.characters.add(new Player(1, 1));
-        this.characters.add(new LumberJack(12, 27));
+        Player player = new Player(1, 1, puzzle);
+        LumberJack lumberJack = new LumberJack(12, 27, puzzle);
+        this.characters.add(player);
+        this.characters.add(lumberJack);
+    
+        // Iniciar a thread do LumberJack
+        Thread lumberJackThread = new Thread(lumberJack);
+        lumberJackThread.start();
     }
 
-    private void drawLumberJack(Graphics g){
-        int lumberjackX = 12;
-        int lumberjackY = 27;
-        g.drawImage(this.tileManager.getTileImage("X"), lumberjackY * CELL_SIZE, lumberjackX * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+    private void drawCharacters(Graphics g){
+        for(Character character: characters){
+            g.drawImage(this.tileManager.getTileImage(String.valueOf(character.getSymbol())), character.getY() * CELL_SIZE, character.getX() * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+        }
     }
-
-    private void drawPlayer(Graphics g) {
-        int playerY = characters.get(0).getY();
-        int playerX = characters.get(0).getX();
-        g.drawImage(this.tileManager.getTileImage("P"), playerY * CELL_SIZE, playerX * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
-    }
-
+    
     private void drawHeart(Graphics g){
         String coracoes="";
         for(int i=0; i<characters.get(0).getVidas(); i++){
@@ -148,26 +141,38 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     public int getCellSize(){
         return CELL_SIZE;
     }
-
     public void movePlayer(int x, int y){
         if (x >= 0 && x < puzzle.getHeight() && y >= 0 && y < puzzle.getWidth()) {
             char c = puzzle.getLocation(x, y);
-            if (c == '.' || c == 'A') {
+            if(isCharacterAtPosition(x, y)){
+                return;
+            }
+            if (c == '.' || c == 'A' ) {
                 characters.get(0).setX(x);
                 characters.get(0).setY(y);
             } 
-            else if(c == 'L'){
+            if(c == 'L'){
                 VISIBILITY_RADIUS+=1;
                 puzzle.setLocation(x, y, '.');
+                return;
             }
-            else if(c == 'M'){
+            if(c == 'M'){
                 VISIBILITY_RADIUS=50;
                 puzzle.setLocation(x, y, '.');
+
+                return;
             }
         }
         repaint();
     }
-
+    private boolean isCharacterAtPosition(int x,int y){
+        for(Character character: characters){
+            if(character.getX()==x && character.getY()==y){
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {

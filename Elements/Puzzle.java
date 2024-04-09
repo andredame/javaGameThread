@@ -1,10 +1,11 @@
+package Elements;
 
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class Mapa implements Runnable{
+public class Puzzle implements Runnable{
     private char[][] puzzle;
         
     public char[][] getPuzzle() {
@@ -15,7 +16,7 @@ public class Mapa implements Runnable{
         this.puzzle = puzzle;
     }
 
-    public Mapa(){
+    public Puzzle(){
         createPuzzle();
     }
 
@@ -62,6 +63,8 @@ public class Mapa implements Runnable{
         }
         
     }
+
+    
 
     @Override
     public void run() {
