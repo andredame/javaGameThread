@@ -10,7 +10,7 @@ import Elements.Character;
 public class Maze extends JPanel implements KeyListener, Runnable{
     private JFrame mainFrame;
     private Puzzle puzzle;
-    private static int VISIBILITY_RADIUS = 2; // Defina o raio de visão do jogador aqui
+    private static int VISIBILITY_RADIUS = 20; // Defina o raio de visão do jogador aqui
     private static final int CELL_SIZE = 30;
     private static final int DESCRIPTION_OFFSET_Y = 20;
     private ArrayList <Character> characters;
@@ -79,7 +79,6 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                 }
             }
         }
-        System.out.println(characters.get(1).getX() + " " + characters.get(1).getY());
         drawCharacters(g,distance);
         drawHeart(g);
 
@@ -164,7 +163,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                     while (characters.get(1).isAlive()) {
                         int moveX = 0;
                         int moveY = 0;
-                        int direction = (int) (Math.random() * 4); // 0: cima, 1: baixo, 2: esquerda, 3: direita
+                        int direction = (int) (Math.random() * 4); 
                         switch (direction) {
                             case 0: // cima
                                 moveX = -1;
