@@ -10,13 +10,16 @@ import Elements.Character;
 public class Maze extends JPanel implements KeyListener, Runnable{
     private JFrame mainFrame;
     private Puzzle puzzle;
-    private static int VISIBILITY_RADIUS = 50; // Defina o raio de visão do jogador aqui
+    private static int VISIBILITY_RADIUS = 2; // Defina o raio de visão do jogador aqui
     private static final int CELL_SIZE = 30;
     private static final int DESCRIPTION_OFFSET_Y = 20;
     private ArrayList <Character> characters;
     private TileManager tileManager;
     private final int  height;
     private Direction lastDirection;
+
+    private int shotX = -1;
+    private int shotY = -1;
 
     public Maze() {
         this.puzzle = new Puzzle();
@@ -26,7 +29,11 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         initializeWindow();
         this.height = puzzle.getHeight();
         this.lastDirection= Direction.NONE;
+
+        startLumberJackThread();
     }
+
+
 
     private void initializeWindow() {
         this.mainFrame = new JFrame("Maze Solver");
@@ -50,6 +57,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         int height = puzzle.getHeight();
         int playerX = characters.get(0).getX();
         int playerY = characters.get(0).getY();
+        int distance=-1;
     
         // Desenhar o labirinto
         for (int row = 0; row < height; row++) {
@@ -58,7 +66,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                 if(c =='X'){
                     System.out.println( row + " " + col);
                 }
-                int distance = Math.abs(row - playerX) + Math.abs(col - playerY);
+                distance = Math.abs(row - playerX) + Math.abs(col - playerY);
                 if (distance <= VISIBILITY_RADIUS) {
                    g.drawImage(this.tileManager.getTileImage(String.valueOf('.')), col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
                     BufferedImage tileImage = tileManager.getTileImage(String.valueOf(c));
@@ -71,8 +79,10 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                 }
             }
         }
-        drawCharacters(g);
+        System.out.println(characters.get(1).getX() + " " + characters.get(1).getY());
+        drawCharacters(g,distance);
         drawHeart(g);
+
     }
     private void createCharacters(){
         this.characters = new ArrayList<>();
@@ -80,15 +90,17 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         LumberJack lumberJack = new LumberJack(12, 27, puzzle);
         this.characters.add(player);
         this.characters.add(lumberJack);
-    
-        // Iniciar a thread do LumberJack
-        Thread lumberJackThread = new Thread(lumberJack);
-        lumberJackThread.start();
     }
 
-    private void drawCharacters(Graphics g){
+    private void drawCharacters(Graphics g,int distance){
         for(Character character: characters){
-            g.drawImage(this.tileManager.getTileImage(String.valueOf(character.getSymbol())), character.getY() * CELL_SIZE, character.getX() * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+           if(character instanceof Player){
+               g.drawImage(this.tileManager.getTileImage(String.valueOf(character.getSymbol())), character.getY() * CELL_SIZE, character.getX() * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+           }else{
+                if(distance<=VISIBILITY_RADIUS){
+                    g.drawImage(this.tileManager.getTileImage(String.valueOf(character.getSymbol())), character.getY() * CELL_SIZE, character.getX() * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                }
+           }
         }
     }
     
@@ -128,18 +140,80 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                 this.lastDirection=Direction.RIGHT;
 
                 break;
+            case KeyEvent.VK_E:
+                // Verificar se o jogador está ao lado do LumberJack
+                if (isAdjacentToLumberJack(x, y)) {
+                    // Exibir o diálogo
+                    JOptionPane.showMessageDialog(mainFrame, "Você deve achar um machado, porque algumas páginas podem estar entre as árvores.", "Atenção", JOptionPane.INFORMATION_MESSAGE);
+                }
+                break;
             case KeyEvent.VK_SPACE:
                 break;
             default:
-
+            
                 break;
         }
         
         
         movePlayer(x, y);
     }
+    private void startLumberJackThread() {
+        if (characters.get(1).isAlive()) {
+            Thread lumberJackThread = new Thread() {
+                public void run() {
+                    while (characters.get(1).isAlive()) {
+                        int moveX = 0;
+                        int moveY = 0;
+                        int direction = (int) (Math.random() * 4); // 0: cima, 1: baixo, 2: esquerda, 3: direita
+                        switch (direction) {
+                            case 0: // cima
+                                moveX = -1;
+                                break;
+                            case 1: // baixo
+                                moveX = 1;
+                                break;
+                            case 2: // esquerda
+                                moveY = -1;
+                                break;
+                            case 3: // direita
+                                moveY = 1;
+                                break;
+                        }
+                        int newX = characters.get(1).getX() + moveX;
+                        int newY = characters.get(1).getY() + moveY;
+                        if (newX >= 0 && newX < puzzle.getHeight() && newY >= 0 && newY < puzzle.getWidth() && puzzle.isWalkable(newX, newY)) {
+                            characters.get(1).setX(newX);
+                            characters.get(1).setY(newY);
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        repaint();
+                    }
+                }
+            };
+            // Inicie a thread do LumberJack
+            lumberJackThread.start();
+        }
+    }
+    
+
+
+    
     public int getCellSize(){
         return CELL_SIZE;
+    }
+    private boolean isAdjacentToLumberJack(int x, int y) {
+        int lumberJackX = characters.get(1).getX();
+        int lumberJackY = characters.get(1).getY();
+    
+        if ((Math.abs(x - lumberJackX) == 1 && y == lumberJackY) || (Math.abs(y - lumberJackY) == 1 && x == lumberJackX)) {
+            return true;
+        }
+    
+        return false;
     }
     public void movePlayer(int x, int y){
         if (x >= 0 && x < puzzle.getHeight() && y >= 0 && y < puzzle.getWidth()) {
