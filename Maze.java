@@ -13,7 +13,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     private JFrame mainFrame;
     private Player player;
     private Mapa puzzle;
-    private static int VISIBILITY_RADIUS = 2; // Defina o raio de visão do jogador aqui
+    private static int VISIBILITY_RADIUS = 100; // Defina o raio de visão do jogador aqui
     private static final int CELL_SIZE = 30;
     private static final int HORIZONTAL_OFFSET = 0;
     private static final int VERTICAL_OFFSET = 0;
@@ -103,7 +103,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                         else if(c == 'M'){
                             g.drawImage(mapImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
                         }
-                        else if(c =='h'){
+                        else if(c =='H'){
                             g.drawImage(houseImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
                         }
                         
