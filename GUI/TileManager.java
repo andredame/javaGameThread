@@ -1,3 +1,4 @@
+package GUI;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +25,8 @@ public class TileManager {
             BufferedImage lumberjackImage = ImageIO.read(new File("./assets/lumberjack.png"));
             BufferedImage playerImage = ImageIO.read(new File("./assets/player.png"));
             BufferedImage stoneImage = ImageIO.read(new File("./assets/stone.png"));
+            BufferedImage witchTentImage = ImageIO.read(new File("./assets/witch_tent.png"));
+            BufferedImage snakeImage = ImageIO.read(new File("./assets/snake.png"));
 
             tileImages.put("#", treeImage);
             tileImages.put("T", treeImage);
@@ -37,6 +40,8 @@ public class TileManager {
             tileImages.put("X", lumberjackImage);
             tileImages.put("P", playerImage);
             tileImages.put(".", stoneImage);
+            tileImages.put("B", witchTentImage);
+            tileImages.put("S", snakeImage);
         } catch (IOException e) {
             System.out.println("Erro ao carregar imagens dos tiles" + e);
         }

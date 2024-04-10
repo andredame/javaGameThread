@@ -1,36 +1,46 @@
+package GUI;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import javax.swing.*;
-import Elements.*;
-import Elements.Character;
 
+import Elements.*;
+import Elements.GameCharacter;
+import Thread.*;
 
 public class Maze extends JPanel implements KeyListener, Runnable{
     private JFrame mainFrame;
     private Puzzle puzzle;
-    private static int VISIBILITY_RADIUS = 20; // Defina o raio de visão do jogador aqui
-    private static final int CELL_SIZE = 30;
+    private static int VISIBILITY_RADIUS = 50; // Defina o raio de visão do jogador aqui
+    private static final int CELL_SIZE = 27;
     private static final int DESCRIPTION_OFFSET_Y = 20;
-    private ArrayList <Character> characters;
+    private ArrayList <GameCharacter> characters;
     private TileManager tileManager;
     private final int  height;
     private Direction lastDirection;
+    private int idIterator = 0;
 
     private int shotX = -1;
     private int shotY = -1;
+    private Thread shotThread;
+    private boolean shotThreadRunning = false;
+
+    //Threads 
+    private ThreadManager threadManager;
+
+
 
     public Maze() {
         this.puzzle = new Puzzle();
         this.tileManager = new TileManager();
         this.characters = new ArrayList<>();
+        this.threadManager = new ThreadManager();
         createCharacters();
         initializeWindow();
         this.height = puzzle.getHeight();
         this.lastDirection= Direction.NONE;
-
-        startLumberJackThread();
+        threadManager.startAllThreads();
     }
 
 
@@ -59,15 +69,15 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         int playerY = characters.get(0).getY();
         int distance=-1;
     
-        // Desenhar o labirinto
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 char c = puzzle.getLocation(row, col);
-                if(c =='X'){
-                    System.out.println( row + " " + col);
-                }
+                if(c == '1' || c == '2' || c == '3' ){
+                    System.out.println("row:"+ row + " col:"+ col );
+                }                
                 distance = Math.abs(row - playerX) + Math.abs(col - playerY);
                 if (distance <= VISIBILITY_RADIUS) {
+
                    g.drawImage(this.tileManager.getTileImage(String.valueOf('.')), col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
                     BufferedImage tileImage = tileManager.getTileImage(String.valueOf(c));
                     if (tileImage != null) {
@@ -81,24 +91,46 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         }
         drawCharacters(g,distance);
         drawHeart(g);
+        drawShot(g);
 
     }
+
+    private void drawShot(Graphics g) {
+        if (shotX != -1 && shotY != -1) {
+            
+            g.setColor(Color.RED);
+            g.fillOval(shotY * CELL_SIZE, shotX * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        }
+    }
+
     private void createCharacters(){
         this.characters = new ArrayList<>();
-        Player player = new Player(1, 1, puzzle);
-        LumberJack lumberJack = new LumberJack(12, 27, puzzle);
+        Player player = new Player(1, 1, puzzle,idIterator++);
         this.characters.add(player);
+        LumberJack lumberJack = new LumberJack(12, 27, puzzle,idIterator++);
         this.characters.add(lumberJack);
+        Snake s1 = new Snake(5, 50, puzzle,idIterator++);
+        this.characters.add(s1);
+        Snake s2 = new Snake(9, 42, puzzle,idIterator++);
+        this.characters.add(s2);
+        Snake s3 = new Snake(1, 43, puzzle,idIterator++);
+        this.characters.add(s3);
+        threadManager.initiateThreads(characters, this);
     }
 
     private void drawCharacters(Graphics g,int distance){
-        for(Character character: characters){
+        for(GameCharacter character: characters){
            if(character instanceof Player){
                g.drawImage(this.tileManager.getTileImage(String.valueOf(character.getSymbol())), character.getY() * CELL_SIZE, character.getX() * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
-           }else{
-                if(distance<=VISIBILITY_RADIUS){
-                    g.drawImage(this.tileManager.getTileImage(String.valueOf(character.getSymbol())), character.getY() * CELL_SIZE, character.getX() * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
-                }
+           } else {
+               int lumberJackX = character.getX();
+               int lumberJackY = character.getY();
+               int playerX = characters.get(0).getX();
+               int playerY = characters.get(0).getY();
+               int distanceFromPlayer = Math.abs(playerX - lumberJackX) + Math.abs(playerY - lumberJackY);
+               if (distanceFromPlayer <= VISIBILITY_RADIUS) {
+                   g.drawImage(this.tileManager.getTileImage(String.valueOf(character.getSymbol())), character.getY() * CELL_SIZE, character.getX() * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+               }
            }
         }
     }
@@ -142,11 +174,16 @@ public class Maze extends JPanel implements KeyListener, Runnable{
             case KeyEvent.VK_E:
                 // Verificar se o jogador está ao lado do LumberJack
                 if (isAdjacentToLumberJack(x, y)) {
-                    // Exibir o diálogo
                     JOptionPane.showMessageDialog(mainFrame, "Você deve achar um machado, porque algumas páginas podem estar entre as árvores.", "Atenção", JOptionPane.INFORMATION_MESSAGE);
                 }
                 break;
             case KeyEvent.VK_SPACE:
+                if (!shotThreadRunning) {
+                    // startShotThread();
+                    shotThreadRunning = true;
+                    shotX = characters.get(0).getX();
+                    shotY= characters.get(0).getY();
+                }
                 break;
             default:
             
@@ -156,54 +193,49 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         
         movePlayer(x, y);
     }
-    private void startLumberJackThread() {
-        if (characters.get(1).isAlive()) {
-            Thread lumberJackThread = new Thread() {
-                public void run() {
-                    while (characters.get(1).isAlive()) {
-                        int moveX = 0;
-                        int moveY = 0;
-                        int direction = (int) (Math.random() * 4); 
-                        switch (direction) {
-                            case 0: // cima
-                                moveX = -1;
-                                break;
-                            case 1: // baixo
-                                moveX = 1;
-                                break;
-                            case 2: // esquerda
-                                moveY = -1;
-                                break;
-                            case 3: // direita
-                                moveY = 1;
-                                break;
-                        }
-                        int newX = characters.get(1).getX() + moveX;
-                        int newY = characters.get(1).getY() + moveY;
-                        if (newX >= 0 && newX < puzzle.getHeight() && newY >= 0 && newY < puzzle.getWidth() && puzzle.isWalkable(newX, newY)) {
-                            characters.get(1).setX(newX);
-                            characters.get(1).setY(newY);
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        repaint();
-                    }
-                }
-            };
-            // Inicie a thread do LumberJack
-            lumberJackThread.start();
+
+
+    // private void startShotThread() {
+    //     shotThread = new Thread() {
+    //         public void run() {
+    //             while (true) {
+    //                 if (shotX != -1 && shotY != -1) {
+    //                     checkShotHit();
+    
+    //                     if (isWithinGrid()) {
+    //                         moveShot();
+    //                     } else {
+    //                         // Encerre a thread se o tiro sair do grid
+    //                         stopShotThread();
+    //                     }
+    
+    //                     repaint();
+    //                 }
+    //                 // Aguarde um tempo antes de verificar novamente
+    //                 try {
+    //                     Thread.sleep(100);
+    //                 } catch (InterruptedException e) {
+    //                     e.printStackTrace();
+    //                 }
+    //             }
+    //         }
+    //     };
+
+    //     // Inicie a thread de tiro
+    //     shotThread.start();
+    // }
+    private boolean isWithinGrid() {
+        return shotX >= 0 && shotX < puzzle.getHeight() && shotY >= 0 && shotY < puzzle.getWidth();
+    }
+    
+    private void stopShotThread() {
+        if (shotThread != null && shotThread.isAlive()) {
+            shotThread.interrupt(); // Interrompa a execução da thread
         }
     }
-    
-
 
     
-    public int getCellSize(){
-        return CELL_SIZE;
-    }
+
     private boolean isAdjacentToLumberJack(int x, int y) {
         int lumberJackX = characters.get(1).getX();
         int lumberJackY = characters.get(1).getY();
@@ -238,8 +270,8 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         }
         repaint();
     }
-    private boolean isCharacterAtPosition(int x,int y){
-        for(Character character: characters){
+    public boolean isCharacterAtPosition(int x,int y){
+        for(GameCharacter character: characters){
             if(character.getX()==x && character.getY()==y){
                 return true;
             }
@@ -255,16 +287,49 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     public void keyReleased(KeyEvent e) {
     }
 
- 
-
-    public static void main(String[] args) {
-        new Maze();
-    }
-
 	@Override
 	public void run() {
 	
 	}
+
+    private void moveShot() {
+        
+        switch (lastDirection) {
+            case UP:
+                shotX--;
+                break;
+            case DOWN:
+                shotX++;
+                break;
+            case LEFT:
+                shotY--;
+                break;
+            case RIGHT:
+                shotY++;
+                break;
+            default:
+                break;
+        }
+    }
+    
+    // private void checkShotHit() {
+    //     for (int i = 2; i < characters.size(); i++) {
+    //         GameCharacter character = characters.get(i);
+    //         if (character.getX() == shotX && character.getY() == shotY) {
+    //             characters.remove(i);
+    //             stopSnakeThread(i);
+    //             shotX = -1;
+    //             shotY = -1;
+    //             shotThreadRunning = false;
+    //             break;
+    //         }
+    //     }
+    // }
+   
+
+    public boolean isLumberjackAlive(){
+        return characters.get(1).isAlive();
+    }
 
 
     
