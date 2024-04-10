@@ -10,7 +10,7 @@ import Elements.Character;
 public class Maze extends JPanel implements KeyListener, Runnable{
     private JFrame mainFrame;
     private Puzzle puzzle;
-    private static int VISIBILITY_RADIUS = 20; // Defina o raio de visão do jogador aqui
+    private static int VISIBILITY_RADIUS = 100; // Defina o raio de visão do jogador aqui
     private static final int CELL_SIZE = 30;
     private static final int DESCRIPTION_OFFSET_Y = 20;
     private ArrayList <Character> characters;
