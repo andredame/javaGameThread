@@ -1,7 +1,7 @@
 package Elements;
-public class Player extends Character{
-    public Player(int x, int y, Puzzle puzzle){
-        super(x, y, 3, 'P', puzzle);
+public class Player extends GameCharacter{
+    public Player(int x, int y, Puzzle puzzle,int id){
+        super(x, y, 3, 'P', puzzle,id);
     }
 
     @Override

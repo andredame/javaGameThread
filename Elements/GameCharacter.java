@@ -1,17 +1,25 @@
 package Elements;
 
-public abstract class Character{
+public abstract class GameCharacter{
     private int x;
     private int y;
     private int vidas;
     private char symbol;
     private Puzzle puzzle;
-    public Character(int x, int y, int vidas, char symbol,Puzzle puzzle ){
+    private int id;
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public GameCharacter(int x, int y, int vidas, char symbol,Puzzle puzzle,int id){
         this.x = x;
         this.y = y;
         this.vidas = vidas;
         this.symbol = symbol;
         this.puzzle = puzzle;
+        this.id = id;
     }
     public void setVidas(int vidas) {
         this.vidas = vidas;

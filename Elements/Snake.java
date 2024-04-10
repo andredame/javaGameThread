@@ -1,8 +1,8 @@
 package Elements;
-public class Snake extends Character {
+public class Snake extends GameCharacter {
 
-    public Snake(int x, int y, Puzzle puzzle) {
-        super(x, y, 1, 'S', puzzle);
+    public Snake(int x, int y, Puzzle puzzle,int id) {
+        super(x, y, 1, 'S', puzzle,id);
     }
 
     @Override
