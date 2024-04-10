@@ -4,6 +4,14 @@ import Elements.Puzzle;
 import GUI.Maze;
 public class CharacterThread extends Thread {
     private GameCharacter character;
+    public GameCharacter getCharacter() {
+        return character;
+    }
+
+    public void setCharacter(GameCharacter character) {
+        this.character = character;
+    }
+
     private Puzzle puzzle;
     private Maze maze;
     private int identificador;

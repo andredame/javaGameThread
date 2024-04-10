@@ -1,15 +1,20 @@
 package Thread;
 import Elements.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import Thread.CharacterThread;
-
 import GUI.*;
 
 public class ThreadManager {
 
     private Map<Integer,Thread> threads;
+
+    public Map<Integer, Thread> getThreads() {
+        return threads;
+    }
+
+    public void setThreads(Map<Integer, Thread> threads) {
+        this.threads = threads;
+    }
 
     public ThreadManager() {
         this.threads = new HashMap<Integer,Thread>() ;
@@ -19,12 +24,9 @@ public class ThreadManager {
         threads.put(thread.getIdentificador(),thread);
     }
 
-    public void initiateThreads(ArrayList <GameCharacter> characters,Maze maze) {
-        for (GameCharacter character : characters) {
-           if(!(character instanceof Player)){
-                CharacterThread thread = new CharacterThread(maze,character, character.getPuzzle(),character.getId());
-                addThread(thread);
-           }
+    public void initiateThreads() {
+        for (Thread thread : threads.values()) {
+            thread.start();
         }
     }
 
@@ -40,4 +42,17 @@ public class ThreadManager {
         }
     }
 
-}
+    public boolean isCharacterAtPosition(int x, int y) {
+        for (Thread thread : threads.values()) {
+            GameCharacter character = ((CharacterThread) thread).getCharacter();
+            if (character.getX() == x && character.getY() == y) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+
+
+
+}   
