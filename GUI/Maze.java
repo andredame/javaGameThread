@@ -92,19 +92,13 @@ public class Maze extends JPanel implements KeyListener, Runnable{
             }
         }
         drawThreads(g);
-        drawCharacter(g, player);
+        draw(g, this.tileManager.getTileImage(String.valueOf(player.getSymbol())), playerX, playerY);
+        
         drawHeart(g);
-        drawShot(g);
+        
 
     }
 
-    private void drawShot(Graphics g) {
-        if (shotX != -1 && shotY != -1) {
-            
-            g.setColor(Color.RED);
-            g.fillOval(shotY * CELL_SIZE, shotX * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-        }
-    }
 
     private void createCharacters(){
         LumberJack lumberJack = new LumberJack(12, 27, puzzle,idIterator++);
@@ -132,20 +126,28 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                 int characterX = character.getX();
                 int characterY = character.getY();
     
-                // Calcula a distância entre o jogador e o personagem
                 int distance = Math.abs(playerX - characterX) + Math.abs(playerY - characterY);
     
-                // Verifica se o personagem está dentro do raio de visibilidade
                 if (distance <= VISIBILITY_RADIUS) {
-                    drawCharacter(g, character);
+                    draw(g, this.tileManager.getTileImage(String.valueOf(character.getSymbol())), characterX, characterY);
+                }
+            }
+
+            if (thread instanceof ThrowableThread) {
+                ThrowableThread throwableThread = (ThrowableThread) thread;
+                int x = throwableThread.getX();
+                int y = throwableThread.getY();
+                int distance = Math.abs(playerX - x) + Math.abs(playerY - y);
+                if (distance <= VISIBILITY_RADIUS) {
+                    draw(g, this.tileManager.getTileImage(String.valueOf(throwableThread.getSymbol())), x, y);
                 }
             }
         }
     }
-    private void drawCharacter(Graphics g, GameCharacter character) {
-        int x = character.getX();
-        int y = character.getY();
-        g.drawImage(this.tileManager.getTileImage(String.valueOf(character.getSymbol())), y * CELL_SIZE, x * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+
+    private void draw(Graphics g, Image image,int x, int y) {
+
+        g.drawImage(image, y * CELL_SIZE, x * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
     }
     
     private void drawHeart(Graphics g){
@@ -190,7 +192,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                 }
                 break;
             case KeyEvent.VK_SPACE:
-                // startThrowable();
+                startThrowable();
                 break;
 
                 case KeyEvent.VK_R:
@@ -224,6 +226,17 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         }
         repaint();
     }
+
+
+    public void startThrowable() {
+        if (lastDirection != Direction.NONE) {
+            int x = player.getX();
+            int y = player.getY();
+            ThrowableThread throwableThread = new ThrowableThread(this, x, y, lastDirection, puzzle, idIterator++,"A");
+            threadManager.addThread(throwableThread);
+            throwableThread.start();
+        }
+    }
   
 
     @Override
@@ -240,7 +253,6 @@ public class Maze extends JPanel implements KeyListener, Runnable{
 	}
 
     private boolean isAdjacentToLumberJack(int x, int y) {
-        // Obtém a posição do LumberJack
         int lumberJackX = -1;
         int lumberJackY = -1;
         for (Thread thread : threadManager.getThreads().values()) {
@@ -254,7 +266,6 @@ public class Maze extends JPanel implements KeyListener, Runnable{
             }
         }
     
-        // Verifica se o LumberJack está adjacente ao jogador
         if (lumberJackX != -1 && lumberJackY != -1) {
             if (Math.abs(x - lumberJackX) == 1 && y == lumberJackY) {
                 return true;
