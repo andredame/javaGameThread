@@ -1,27 +1,24 @@
 package Thread;
 import Elements.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import Thread.CharacterThread;
+
 import GUI.*;
 
 public class ThreadManager {
 
-    private ArrayList<Thread> threads;
+    private Map<Integer,Thread> threads;
 
     public ThreadManager() {
-        this.threads = new ArrayList<>();
+        this.threads = new HashMap<Integer,Thread>() ;
     }
 
-    public void addThread(Thread thread) {
-        threads.add(thread);
+    public void addThread(CharacterThread thread) {
+        threads.put(thread.getIdentificador(),thread);
     }
 
-    public void removeThread(Thread thread) {
-        threads.remove(thread);
-    }
-
-    public ArrayList<Thread> getThreads() {
-        return threads;
-    }
     public void initiateThreads(ArrayList <GameCharacter> characters,Maze maze) {
         for (GameCharacter character : characters) {
            if(!(character instanceof Player)){
@@ -32,14 +29,15 @@ public class ThreadManager {
     }
 
     public void startAllThreads() {
-        for (Thread thread : threads) {
+        for (Thread thread : threads.values()) {
             thread.start();
         }
     }
 
     public void stopAllThreads() {
-        for (Thread thread : threads) {
+        for (Thread thread : threads.values()) {
             thread.interrupt();
         }
     }
+
 }

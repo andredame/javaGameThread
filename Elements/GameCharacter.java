@@ -46,6 +46,9 @@ public abstract class GameCharacter{
     public void setPuzzle(Puzzle puzzle) {
         this.puzzle = puzzle;
     }
+    public void lostLife() {
+        vidas--;
+    }
 
     public Puzzle getPuzzle() {
         return puzzle;

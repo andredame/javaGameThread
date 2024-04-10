@@ -23,8 +23,6 @@ public class Maze extends JPanel implements KeyListener, Runnable{
 
     private int shotX = -1;
     private int shotY = -1;
-    private Thread shotThread;
-    private boolean shotThreadRunning = false;
 
     //Threads 
     private ThreadManager threadManager;
@@ -123,13 +121,15 @@ public class Maze extends JPanel implements KeyListener, Runnable{
            if(character instanceof Player){
                g.drawImage(this.tileManager.getTileImage(String.valueOf(character.getSymbol())), character.getY() * CELL_SIZE, character.getX() * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
            } else {
-               int lumberJackX = character.getX();
-               int lumberJackY = character.getY();
-               int playerX = characters.get(0).getX();
-               int playerY = characters.get(0).getY();
-               int distanceFromPlayer = Math.abs(playerX - lumberJackX) + Math.abs(playerY - lumberJackY);
-               if (distanceFromPlayer <= VISIBILITY_RADIUS) {
-                   g.drawImage(this.tileManager.getTileImage(String.valueOf(character.getSymbol())), character.getY() * CELL_SIZE, character.getX() * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+               if(character.isAlive()){
+                    int lumberJackX = character.getX();
+                    int lumberJackY = character.getY();
+                    int playerX = characters.get(0).getX();
+                    int playerY = characters.get(0).getY();
+                    int distanceFromPlayer = Math.abs(playerX - lumberJackX) + Math.abs(playerY - lumberJackY);
+                    if (distanceFromPlayer <= VISIBILITY_RADIUS) {
+                        g.drawImage(this.tileManager.getTileImage(String.valueOf(character.getSymbol())), character.getY() * CELL_SIZE, character.getX() * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+                    }
                }
            }
         }
@@ -178,13 +178,11 @@ public class Maze extends JPanel implements KeyListener, Runnable{
                 }
                 break;
             case KeyEvent.VK_SPACE:
-                if (!shotThreadRunning) {
-                    // startShotThread();
-                    shotThreadRunning = true;
-                    shotX = characters.get(0).getX();
-                    shotY= characters.get(0).getY();
-                }
+                
                 break;
+
+                case KeyEvent.VK_R:
+                    
             default:
             
                 break;
@@ -192,46 +190,6 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         
         
         movePlayer(x, y);
-    }
-
-
-    // private void startShotThread() {
-    //     shotThread = new Thread() {
-    //         public void run() {
-    //             while (true) {
-    //                 if (shotX != -1 && shotY != -1) {
-    //                     checkShotHit();
-    
-    //                     if (isWithinGrid()) {
-    //                         moveShot();
-    //                     } else {
-    //                         // Encerre a thread se o tiro sair do grid
-    //                         stopShotThread();
-    //                     }
-    
-    //                     repaint();
-    //                 }
-    //                 // Aguarde um tempo antes de verificar novamente
-    //                 try {
-    //                     Thread.sleep(100);
-    //                 } catch (InterruptedException e) {
-    //                     e.printStackTrace();
-    //                 }
-    //             }
-    //         }
-    //     };
-
-    //     // Inicie a thread de tiro
-    //     shotThread.start();
-    // }
-    private boolean isWithinGrid() {
-        return shotX >= 0 && shotX < puzzle.getHeight() && shotY >= 0 && shotY < puzzle.getWidth();
-    }
-    
-    private void stopShotThread() {
-        if (shotThread != null && shotThread.isAlive()) {
-            shotThread.interrupt(); // Interrompa a execução da thread
-        }
     }
 
     
@@ -246,6 +204,7 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     
         return false;
     }
+
     public void movePlayer(int x, int y){
         if (x >= 0 && x < puzzle.getHeight() && y >= 0 && y < puzzle.getWidth()) {
             char c = puzzle.getLocation(x, y);
@@ -291,42 +250,6 @@ public class Maze extends JPanel implements KeyListener, Runnable{
 	public void run() {
 	
 	}
-
-    private void moveShot() {
-        
-        switch (lastDirection) {
-            case UP:
-                shotX--;
-                break;
-            case DOWN:
-                shotX++;
-                break;
-            case LEFT:
-                shotY--;
-                break;
-            case RIGHT:
-                shotY++;
-                break;
-            default:
-                break;
-        }
-    }
-    
-    // private void checkShotHit() {
-    //     for (int i = 2; i < characters.size(); i++) {
-    //         GameCharacter character = characters.get(i);
-    //         if (character.getX() == shotX && character.getY() == shotY) {
-    //             characters.remove(i);
-    //             stopSnakeThread(i);
-    //             shotX = -1;
-    //             shotY = -1;
-    //             shotThreadRunning = false;
-    //             break;
-    //         }
-    //     }
-    // }
-   
-
     public boolean isLumberjackAlive(){
         return characters.get(1).isAlive();
     }
