@@ -121,16 +121,24 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     }
 
 
-    private void drawThreads(Graphics g){
-        for(Thread thread : threadManager.getThreads().values()) {
+    private void drawThreads(Graphics g) {
+        int playerX = player.getX();
+        int playerY = player.getY();
+    
+        for (Thread thread : threadManager.getThreads().values()) {
             if (thread instanceof CharacterThread) {
                 CharacterThread characterThread = (CharacterThread) thread;
                 GameCharacter character = characterThread.getCharacter();
-                drawCharacter(g, character);
-            }
-            if(thread instanceof ThrowableThread){
-                ThrowableThread throwableThread = (ThrowableThread) thread;
-                // drawThrowable(g, throwableThread);
+                int characterX = character.getX();
+                int characterY = character.getY();
+    
+                // Calcula a distância entre o jogador e o personagem
+                int distance = Math.abs(playerX - characterX) + Math.abs(playerY - characterY);
+    
+                // Verifica se o personagem está dentro do raio de visibilidade
+                if (distance <= VISIBILITY_RADIUS) {
+                    drawCharacter(g, character);
+                }
             }
         }
     }
