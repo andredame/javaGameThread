@@ -122,14 +122,18 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         for (Thread thread : threadManager.getThreads().values()) {
             if (thread instanceof CharacterThread) {
                 CharacterThread characterThread = (CharacterThread) thread;
-                GameCharacter character = characterThread.getCharacter();
-                int characterX = character.getX();
-                int characterY = character.getY();
-    
-                int distance = Math.abs(playerX - characterX) + Math.abs(playerY - characterY);
-    
-                if (distance <= VISIBILITY_RADIUS) {
-                    draw(g, this.tileManager.getTileImage(String.valueOf(character.getSymbol())), characterX, characterY);
+                if (characterThread.getCharacter().isAlive()) {
+                    GameCharacter character = characterThread.getCharacter();
+                    int characterX = character.getX();
+                    int characterY = character.getY();
+
+                    int distance = Math.abs(playerX - characterX) + Math.abs(playerY - characterY);
+
+                    if (distance <= VISIBILITY_RADIUS) {
+                        draw(g, this.tileManager.getTileImage(String.valueOf(character.getSymbol())), characterX, characterY);
+                    }
+                } else {
+                    threadManager.getThreads().remove(characterThread.getCharacter().getId());
                 }
             }
 
@@ -146,7 +150,6 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     }
 
     private void draw(Graphics g, Image image,int x, int y) {
-
         g.drawImage(image, y * CELL_SIZE, x * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
     }
     
@@ -278,6 +281,9 @@ public class Maze extends JPanel implements KeyListener, Runnable{
         return false; 
     }
 
+    public ThreadManager getThreadManager() {
+        return threadManager;
+    }
 
 
     

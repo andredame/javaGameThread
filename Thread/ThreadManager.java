@@ -29,6 +29,18 @@ public class ThreadManager {
         }
     }
 
+    public void checkLife() {
+        for (Thread thread : threads.values()) {
+            if (thread instanceof CharacterThread) {
+                CharacterThread characterThread = (CharacterThread) thread;
+                GameCharacter character = characterThread.getCharacter();
+                if (!character.isAlive()) {
+                    threads.remove(character.getId());
+                }
+            }
+        }
+    }
+
     public void initiateThreads() {
         for (Thread thread : threads.values()) {
             thread.start();

@@ -9,7 +9,7 @@ public class ThrowableThread extends Thread {
     private int x;
     private int y;
     private final Direction direction;
-    private static final int speed = 10;
+    private static final int speed = 500;
     private final Puzzle puzzle;
     private final Maze maze;
     private final int identificador;
@@ -31,18 +31,19 @@ public class ThrowableThread extends Thread {
 
     @Override
     public void run() {
-        while (isWithinBounds()) {
+        do {
             moveInDirection();
-            System.out.println("ThrowableThread: " + x + " " + y);
             maze.repaint();
             try {
-                Thread.sleep(speed);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             
-        
-        }
+            if (hitCharacter()) {
+                reduceCharacterLife();
+            }
+        } while (isWithinBounds());
 
     }
     public int getY() {
@@ -57,6 +58,34 @@ public class ThrowableThread extends Thread {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    private boolean hitCharacter() {
+        // Verifica se há um personagem na posição atual do machado
+        for (Thread thread : maze.getThreadManager().getThreads().values()) {
+            if (thread instanceof CharacterThread) {
+                CharacterThread characterThread = (CharacterThread) thread;
+                GameCharacter character = characterThread.getCharacter();
+                if (character.getX() == x && character.getY() == y) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private void reduceCharacterLife() {
+        for (Thread thread : maze.getThreadManager().getThreads().values()) {
+            if (thread instanceof CharacterThread) {
+                CharacterThread characterThread = (CharacterThread) thread;
+                GameCharacter character = characterThread.getCharacter();
+                if (character.getX() == x && character.getY() == y) {
+                    character.lostLife();
+                    System.out.println("Personagem " + character.getId() + " perdeu uma vida");
+                    break;
+                }
+            }
+        }
     }
 
     private void moveInDirection() {
