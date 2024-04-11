@@ -2,7 +2,6 @@ package Threads;
 import Elements.*;
 import java.util.HashMap;
 import java.util.Map;
-import GUI.*;
 
 public class ThreadManager {
 
@@ -20,8 +19,26 @@ public class ThreadManager {
         this.threads = new HashMap<Integer,Thread>() ;
     }
 
-    public void addThread(CharacterThread thread) {
-        threads.put(thread.getIdentificador(),thread);
+    public void addThread(Thread thread) {
+        if (thread instanceof CharacterThread) {
+            CharacterThread characterThread = (CharacterThread) thread;
+            threads.put(characterThread.getIdentificador(), thread);
+        } else if (thread instanceof ThrowableThread) {
+            ThrowableThread throwableThread = (ThrowableThread) thread;
+            threads.put(throwableThread.getIdentificador(), thread);
+        }
+    }
+
+    public void checkLife() {
+        for (Thread thread : threads.values()) {
+            if (thread instanceof CharacterThread) {
+                CharacterThread characterThread = (CharacterThread) thread;
+                GameCharacter character = characterThread.getCharacter();
+                if (!character.isAlive()) {
+                    threads.remove(character.getId());
+                }
+            }
+        }
     }
 
     public void initiateThreads() {
@@ -44,9 +61,12 @@ public class ThreadManager {
 
     public boolean isCharacterAtPosition(int x, int y) {
         for (Thread thread : threads.values()) {
-            GameCharacter character = ((CharacterThread) thread).getCharacter();
-            if (character.getX() == x && character.getY() == y) {
-                return true;
+            if (thread instanceof CharacterThread) {
+                CharacterThread characterThread = (CharacterThread) thread;
+                GameCharacter character = characterThread.getCharacter();
+                if (character.getX() == x && character.getY() == y) {
+                    return true;
+                }
             }
         }
         return false;
