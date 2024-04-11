@@ -32,18 +32,27 @@ public class ThrowableThread extends Thread {
     @Override
     public void run() {
         do {
-            moveInDirection();
-            maze.repaint();
             try {
+                moveInDirection();
                 Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             
             if (hitCharacter()) {
+                maze.getThreadManager().removeThread(identificador, this);
                 reduceCharacterLife();
             }
+            if(foundTree()){
+                maze.getThreadManager().removeThread(identificador, this);
+                puzzle.setLocation(x, y, '.');
+                break;
+            }
+            maze.repaint();
+
         } while (isWithinBounds());
+        maze.getThreadManager().removeThread(identificador, this);
+
 
     }
     public int getY() {
@@ -55,13 +64,19 @@ public class ThrowableThread extends Thread {
         return symbol;
     }
 
+    public boolean foundTree() {
+        if( puzzle.getLocation(x, y) == 'T'){
+            return true;
+        }
+        return false;
+    }
+
 
     public void setY(int y) {
         this.y = y;
     }
 
     private boolean hitCharacter() {
-        // Verifica se há um personagem na posição atual do machado
         for (Thread thread : maze.getThreadManager().getThreads().values()) {
             if (thread instanceof CharacterThread) {
                 CharacterThread characterThread = (CharacterThread) thread;

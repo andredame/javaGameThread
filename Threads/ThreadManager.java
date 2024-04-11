@@ -47,6 +47,10 @@ public class ThreadManager {
         }
     }
 
+    public void removeThread(int id,Thread thread) {
+        threads.remove(id,thread);
+    }
+
     public void startAllThreads() {
         for (Thread thread : threads.values()) {
             thread.start();

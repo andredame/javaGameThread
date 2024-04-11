@@ -9,7 +9,7 @@ import Elements.*;
 import Elements.GameCharacter;
 import Threads.*;
 
-public class Maze extends JPanel implements KeyListener, Runnable{
+public class Maze extends JPanel implements KeyListener{
     private JFrame mainFrame;
     private Puzzle puzzle;
     private static int VISIBILITY_RADIUS = 50; // Defina o raio de visão do jogador aqui
@@ -21,8 +21,9 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     private Direction lastDirection;
     private int idIterator = 0;
 
-    private int shotX = -1;
-    private int shotY = -1;
+    private int cameraX;
+    private int cameraY;
+
 
     //Threads 
     private ThreadManager threadManager;
@@ -250,10 +251,6 @@ public class Maze extends JPanel implements KeyListener, Runnable{
     public void keyReleased(KeyEvent e) {
     }
 
-	@Override
-	public void run() {
-	
-	}
 
     private boolean isAdjacentToLumberJack(int x, int y) {
         int lumberJackX = -1;
