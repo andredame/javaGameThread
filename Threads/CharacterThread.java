@@ -1,4 +1,4 @@
-package Thread;
+package Threads;
 import Elements.GameCharacter;
 import Elements.Puzzle;
 import GUI.Maze;

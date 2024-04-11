@@ -7,7 +7,7 @@ import javax.swing.*;
 
 import Elements.*;
 import Elements.GameCharacter;
-import Thread.*;
+import Threads.*;
 
 public class Maze extends JPanel implements KeyListener, Runnable{
     private JFrame mainFrame;

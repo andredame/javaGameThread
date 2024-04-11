@@ -40,7 +40,7 @@ public class TileManager {
             tileImages.put("X", lumberjackImage);
             tileImages.put("P", playerImage);
             tileImages.put(".", stoneImage);
-            tileImages.put("B", witchTentImage);
+            tileImages.put("Z", witchTentImage);
             tileImages.put("S", snakeImage);
         } catch (IOException e) {
             System.out.println("Erro ao carregar imagens dos tiles" + e);
