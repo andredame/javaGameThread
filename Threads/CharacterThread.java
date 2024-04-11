@@ -1,16 +1,16 @@
 package Threads;
 import Elements.GameCharacter;
 import Elements.Puzzle;
-import GUI.Maze;
+import GUI.GameGUI;
 public class CharacterThread extends Thread {
     private GameCharacter character;
 
 
     private Puzzle puzzle;
-    private Maze maze;
+    private GameGUI maze;
     private int identificador;
 
-    public CharacterThread(Maze maze,GameCharacter character, Puzzle puzzle,int id) {
+    public CharacterThread(GameGUI maze,GameCharacter character, Puzzle puzzle,int id) {
         this.character = character;
         this.puzzle = puzzle;
         this.maze = maze;

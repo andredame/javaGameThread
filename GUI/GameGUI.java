@@ -9,10 +9,10 @@ import Elements.*;
 import Elements.GameCharacter;
 import Threads.*;
 
-public class Maze extends JPanel implements KeyListener{
+public class GameGUI extends JPanel implements KeyListener{
     private JFrame mainFrame;
     private Puzzle puzzle;
-    private static int VISIBILITY_RADIUS = 50; // Defina o raio de visão do jogador aqui
+    private static int VISIBILITY_RADIUS = 5; // Defina o raio de visão do jogador aqui
     private static final int CELL_SIZE = 27;
     private static final int DESCRIPTION_OFFSET_Y = 20;
    
@@ -32,7 +32,7 @@ public class Maze extends JPanel implements KeyListener{
 
 
 
-    public Maze() {
+    public GameGUI() {
         this.player = new Player(1, 1, puzzle,idIterator++);
         this.puzzle = new Puzzle();
         this.tileManager = new TileManager();
@@ -113,6 +113,9 @@ public class Maze extends JPanel implements KeyListener{
     
         Snake s3 = new Snake(1, 43, puzzle,idIterator++);
         threadManager.addThread(new CharacterThread(this, s3, puzzle, idIterator++));
+
+        Snake s4 = new Snake(1, 44, puzzle,idIterator++);
+        threadManager.addThread(new CharacterThread(this, s4, puzzle, idIterator++));
     }
 
 
@@ -133,8 +136,9 @@ public class Maze extends JPanel implements KeyListener{
                     if (distance <= VISIBILITY_RADIUS) {
                         draw(g, this.tileManager.getTileImage(String.valueOf(character.getSymbol())), characterX, characterY);
                     }
+
                 } else {
-                    threadManager.getThreads().remove(characterThread.getCharacter().getId());
+                    threadManager.removeThread(characterThread.getIdentificador(), thread);
                 }
             }
 
@@ -163,7 +167,6 @@ public class Maze extends JPanel implements KeyListener{
         Font fonte2 = new Font("Segoe UI Emoji", Font.PLAIN, 20); 
         g.setFont(fonte2);
         g.drawString( coracoes, 20, height * CELL_SIZE + DESCRIPTION_OFFSET_Y);
-
     }
         @Override
     public void keyPressed(KeyEvent e) {
@@ -194,11 +197,22 @@ public class Maze extends JPanel implements KeyListener{
                 if (isAdjacentToLumberJack(x, y)) {
                     JOptionPane.showMessageDialog(mainFrame, "Você deve achar um machado, porque algumas páginas podem estar entre as árvores.", "Atenção", JOptionPane.INFORMATION_MESSAGE);
                 }
+
+                if(isAdjacentToLamp(x, y)){
+                    VISIBILITY_RADIUS+=1;
+                    return;
+                }
+
+                if(isAdjacentToAxe(x, y)){
+                    player.setHasAxe(5);
+                    return;
+                }
                 break;
             case KeyEvent.VK_SPACE:
-                startThrowable();
+                if(player.hasAxe() > 0){
+                    startThrowable();
+                }
                 break;
-
                 case KeyEvent.VK_R:
                     
             default:
@@ -217,30 +231,30 @@ public class Maze extends JPanel implements KeyListener{
             if(threadManager.isCharacterAtPosition(x, y)){
                 return;
             }
-            if (c == '.' || c == 'A' ) {
+            if (c == '.') {
                 player.setX(x);
                 player.setY(y);
             } 
-            if(c == 'L'){
-                VISIBILITY_RADIUS+=1;
-                puzzle.setLocation(x, y, '.');
-                return;
-            }
-
         }
         repaint();
     }
+
+
 
 
     public void startThrowable() {
         if (lastDirection != Direction.NONE) {
             int x = player.getX();
             int y = player.getY();
+            player.throwAxe();
             ThrowableThread throwableThread = new ThrowableThread(this, x, y, lastDirection, puzzle, idIterator++,"A");
             threadManager.addThread(throwableThread);
             throwableThread.start();
         }
     }
+
+
+    
   
 
     @Override
@@ -278,11 +292,66 @@ public class Maze extends JPanel implements KeyListener{
         return false; 
     }
 
+    private boolean isAdjacentToAxe (int x , int y){
+        int axeX = -1;
+        int axeY = -1;
+        for(int i=-1; i<2; i++){
+            for(int j=-1; j<2; j++){
+                if(puzzle.getLocation(x+i, y+j) == 'A'){
+                    axeX = x+i;
+                    axeY = y+j;
+                    break;
+                }
+            }
+        }
+    
+        if (axeX != -1 && axeY != -1) {
+            if (Math.abs(x - axeX) == 1 && y == axeY) {
+                puzzle.setLocation(axeX, axeY, '.');
+                return true;
+            }
+            if (Math.abs(y - axeY) == 1 && x == axeX) {
+                puzzle.setLocation(axeX, axeY, '.');
+                return true; 
+            }
+        }
+    
+        return false;
+    }
+
+    
+
+    private boolean isAdjacentToLamp (int x, int y) {
+        int lampX = -1;
+        int lampY = -1;
+        for (int i=-1; i<2; i++){
+            for (int j=-1; j<2; j++){
+                if (puzzle.getLocation(x+i, y+j) == 'L'){
+                    lampX = x+i;
+                    lampY = y+j;
+                    break;
+                }
+            }
+        }
+        if (lampX != -1 && lampY != -1) {
+            if (Math.abs(x - lampX) == 1 && y == lampY) {
+                puzzle.setLocation(lampX, lampY, '.');
+                return true;
+            }
+            if (Math.abs(y - lampY) == 1 && x == lampX) {
+                puzzle.setLocation(lampX, lampY, '.');
+                return true; 
+            }
+        }
+    
+        return false; 
+    }
+
+
+
     public ThreadManager getThreadManager() {
         return threadManager;
     }
 
-
-    
 
 }

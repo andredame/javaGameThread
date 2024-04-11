@@ -1,6 +1,6 @@
 package Threads;
 
-import GUI.Maze;
+import GUI.GameGUI;
 import Elements.Puzzle;
 import Elements.GameCharacter;
 import Elements.Direction;
@@ -11,11 +11,11 @@ public class ThrowableThread extends Thread {
     private final Direction direction;
     private static final int speed = 500;
     private final Puzzle puzzle;
-    private final Maze maze;
+    private final GameGUI maze;
     private final int identificador;
     private String symbol;
 
-    public ThrowableThread(Maze maze, int startX, int startY, Direction direction, Puzzle puzzle,int id,String symbol) {
+    public ThrowableThread(GameGUI maze, int startX, int startY, Direction direction, Puzzle puzzle,int id,String symbol) {
         this.maze = maze;
         this.x = startX;
         this.y = startY;
@@ -39,9 +39,11 @@ public class ThrowableThread extends Thread {
                 e.printStackTrace();
             }
             
-            if (hitCharacter()) {
+            GameCharacter character = hitCharacter();
+            if (character != null) {
+                character.lostLife();
                 maze.getThreadManager().removeThread(identificador, this);
-                reduceCharacterLife();
+                break;
             }
             if(foundTree()){
                 maze.getThreadManager().removeThread(identificador, this);
@@ -53,8 +55,8 @@ public class ThrowableThread extends Thread {
         } while (isWithinBounds());
         maze.getThreadManager().removeThread(identificador, this);
 
-
     }
+
     public int getY() {
         return y;
     }
@@ -76,32 +78,19 @@ public class ThrowableThread extends Thread {
         this.y = y;
     }
 
-    private boolean hitCharacter() {
+    private GameCharacter hitCharacter() {
         for (Thread thread : maze.getThreadManager().getThreads().values()) {
             if (thread instanceof CharacterThread) {
                 CharacterThread characterThread = (CharacterThread) thread;
                 GameCharacter character = characterThread.getCharacter();
                 if (character.getX() == x && character.getY() == y) {
-                    return true;
+                    return character;
                 }
             }
         }
-        return false;
+        return null;
     }
-    
-    private void reduceCharacterLife() {
-        for (Thread thread : maze.getThreadManager().getThreads().values()) {
-            if (thread instanceof CharacterThread) {
-                CharacterThread characterThread = (CharacterThread) thread;
-                GameCharacter character = characterThread.getCharacter();
-                if (character.getX() == x && character.getY() == y) {
-                    character.lostLife();
-                    System.out.println("Personagem " + character.getId() + " perdeu uma vida");
-                    break;
-                }
-            }
-        }
-    }
+
 
     private void moveInDirection() {
         switch (direction) {
@@ -146,7 +135,7 @@ public class ThrowableThread extends Thread {
         return puzzle;
     }
 
-    public Maze getMaze() {
+    public GameGUI getMaze() {
         return maze;
     }
 

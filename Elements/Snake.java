@@ -2,7 +2,7 @@ package Elements;
 public class Snake extends GameCharacter {
 
     public Snake(int x, int y, Puzzle puzzle,int id) {
-        super(x, y, 3, 'S', puzzle,id);
+        super(x, y, 1, 'S', puzzle,id);
     }
 
     @Override
