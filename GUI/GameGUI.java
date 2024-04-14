@@ -4,13 +4,11 @@ import java.awt.event.*;
 
 import java.awt.image.*;
 //imageio
-import javax.imageio.ImageIO;
 
 import javax.swing.*;
 
 
 import Elements.*;
-import Elements.GameCharacter;
 import Threads.*;
 
 public class GameGUI extends JPanel implements KeyListener{
@@ -21,7 +19,7 @@ public class GameGUI extends JPanel implements KeyListener{
 
     //SCREEN SETTINGS
     final int originalTileSize=16;
-    final int scale=3;
+    final int scale=4;
     public final int TILE_SIZE = originalTileSize *scale;
     final int maxScreenCol=16;
     final int maxScreenRow=10;
@@ -35,9 +33,6 @@ public class GameGUI extends JPanel implements KeyListener{
     public final int worldHeight = TILE_SIZE * maxWorldRow;
 
     public int id=0;
-
-    private final int DESCRIPTION_OFFSET_Y = 30;
-   
     public TileManager tileManager;
     // private final int  height;
     private Direction lastDirection;
@@ -45,7 +40,6 @@ public class GameGUI extends JPanel implements KeyListener{
     //Threads 
     private ThreadManager threadManager;
     public Player player ;
-    private boolean canTakeDamage=true;
 
 
     public GameGUI() {
@@ -82,36 +76,10 @@ public class GameGUI extends JPanel implements KeyListener{
         int x = 10;
         int y = 30;
         for(int i = 0; i<player.getVidas();i++){
-            g.drawImage(tileManager.getTileImage("hrt"), x, y, TILE_SIZE, TILE_SIZE, null);
+            g.drawImage(tileManager.getTileImage("4"), x, y, TILE_SIZE, TILE_SIZE, null);
             x+=TILE_SIZE;
         }
     }
-
-
-
-
-
-    private void takeDamage(){
-        if(canTakeDamage){
-            player.lostLife();
-        }
-    }
-
-    public void setCanTakeDamage(boolean value){
-        canTakeDamage = value;
-        if(!value){
-            new java.util.Timer().schedule( 
-                new java.util.TimerTask() {
-                    @Override
-                    public void run() {
-                        canTakeDamage = true;
-                    }
-                }, 
-                5000 
-            );
-        }
-    }
-
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -147,15 +115,15 @@ public class GameGUI extends JPanel implements KeyListener{
                     player.setX((x + 1)*TILE_SIZE);
                 }
                 break;
-
-            //apertar E 
             case KeyEvent.VK_E:
                 if(isAdjacentToALamp()){
                     this.VISIBILITY_RADIUS+=2;
                 }
                 if( isAdjacentToAAxe()){
-                    System.out.println("true");
                     player.setHasAxe(8);
+                }
+                if(isAdjacentToHeart()){
+                    player.addVida();
                 }
                 break;
 
@@ -170,6 +138,8 @@ public class GameGUI extends JPanel implements KeyListener{
         repaint();
     }
 
+    
+
     public void startThrowable() {
         if (lastDirection != Direction.NONE) {
             int x = player.getX();
@@ -179,6 +149,20 @@ public class GameGUI extends JPanel implements KeyListener{
             threadManager.addThread(throwableThread);
             throwableThread.start();
         }
+    }
+
+    private boolean isAdjacentToHeart(){
+        int playerX = player.getX() / TILE_SIZE;
+        int playerY = player.getY() / TILE_SIZE;
+        for(int i = -1; i<=1;i++){
+            for(int j = -1; j<=1;j++){
+                if(tileManager.getTile(playerX+i,playerY+j) == '4'){
+                    tileManager.getObjectOfTheGround(playerX+i,playerY+j);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean isAdjacentToALamp(){

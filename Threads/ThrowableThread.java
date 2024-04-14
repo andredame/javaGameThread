@@ -47,6 +47,20 @@ public class ThrowableThread extends Thread {
                 game.getThreadManager().removeThread(identificador, this);
                 break;
             }
+            Thread character = tileManager.foundCharacter(this.x, this.y);
+            if (character != null) {
+                CharacterThread characterThread = (CharacterThread) character;
+                GameCharacter c=characterThread.getCharacter();
+
+                c.lostLife();
+                if(c.getVidas() == 0){
+                    tileManager.removeThread(characterThread.getIdentificador(), characterThread);
+                }
+                this.interrupt();
+                game.getThreadManager().removeThread(identificador, this);
+                break;
+                
+            }
             game.repaint();
         } while (isWithinBounds());
         game.getThreadManager().removeThread(identificador, this);

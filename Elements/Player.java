@@ -48,4 +48,10 @@ public class Player extends GameCharacter{
         gui.drawImage(super.getGui().tileManager.getTileImage(String.valueOf(super.getSymbol())), screenX, screenY, super.getGui().TILE_SIZE, super.getGui().TILE_SIZE, null);
     }
 
+    public void addVida(){
+        if(getVidas() < 3){
+            setVidas(getVidas()+1);
+        }
+    }
+
 }

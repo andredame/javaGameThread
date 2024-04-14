@@ -47,6 +47,7 @@ public class ThreadManager {
         }
     }
 
+
     public void removeThread(int id,Thread thread) {
         threads.remove(id,thread);
     }
@@ -63,11 +64,13 @@ public class ThreadManager {
         }
     }
 
-    public char isCharacterAtPosition(int x, int y) {
+
+    public char isThreadAtPosition(int x, int y) {
         for (Thread thread : threads.values()) {
             
             if (thread instanceof CharacterThread) {
                 CharacterThread characterThread = (CharacterThread) thread;
+
                 GameCharacter character = characterThread.getCharacter();
                 if (character.getX() == x && character.getY() == y) {
                     return character.getSymbol();
@@ -81,6 +84,19 @@ public class ThreadManager {
             }
         }
         return ' ';
+    }
+
+    public Thread isCharacterAtPosition(int x, int y) {
+        for (Thread thread : threads.values()) {
+            if (thread instanceof CharacterThread) {
+                CharacterThread characterThread = (CharacterThread) thread;
+                GameCharacter character = characterThread.getCharacter();
+                if (character.getX() == x && character.getY() == y) {
+                    return thread;
+                }
+            }
+        }
+        return null;
     }
     
 

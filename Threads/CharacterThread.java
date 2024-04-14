@@ -36,7 +36,7 @@ public class CharacterThread extends Thread {
             
             moveCharacter();
             try {
-                Thread.sleep(1500);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -72,8 +72,7 @@ public class CharacterThread extends Thread {
         if(character instanceof Elements.Snake){
             if(isAdjacentToPlayer()){
                 takeDamage();
-            }
-                
+            }     
         }
     }
 

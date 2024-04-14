@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 
 import Threads.CharacterThread;
 import Threads.ThreadManager;
+import Elements.GameCharacter;
 import Elements.LumberJack;
 import Elements.Snake;
 
@@ -43,8 +44,11 @@ public class TileManager {
             BufferedImage snakeImage = resizeImage("/assets/snake.png", 16, 16);
             BufferedImage mapImage = resizeImage("/assets/map.png", 16, 16);
             BufferedImage heartImage = resizeImage("/assets/heart.png", 10, 10);
-
-            tileImages.put("hrt",heartImage);
+            BufferedImage grassImage = resizeImage("/assets/grass.png", 16, 16);
+            BufferedImage roadImage = resizeImage("/assets/road.png", 16, 16);
+            tileImages.put("4",heartImage);
+            tileImages.put("r",roadImage);
+            tileImages.put("g",grassImage);
             tileImages.put("#", treeImage);
             tileImages.put("T", treeImage);
             tileImages.put("A", axeImage);
@@ -64,6 +68,12 @@ public class TileManager {
         }
         loadMap("world.txt");
     }
+
+    public void removeThread(int id, CharacterThread thread) {
+        threadManager.removeThread(id, thread);
+    }
+
+
 
     public void getObjectOfTheGround(int x,int y){
         mapTileChar[y][x] = '.';
@@ -85,6 +95,10 @@ public class TileManager {
 
     public BufferedImage getTileImage(String symbol) {
         return tileImages.get(symbol);
+    }
+
+    public Thread foundCharacter(int x, int y){
+        return threadManager.isCharacterAtPosition(x, y);
     }
 
     public void loadMap(String filePath) {
@@ -128,7 +142,7 @@ public class TileManager {
     
         for (int worldRow = 0; worldRow < game.maxWorldRow; worldRow++) {
             for (int worldCol = 0; worldCol < game.maxWorldCol; worldCol++) {
-                char tile = threadManager.isCharacterAtPosition(worldCol, worldRow)!=' ' ? threadManager.isCharacterAtPosition(worldCol, worldRow) : mapTileChar[worldRow][worldCol];
+                char tile = threadManager.isThreadAtPosition(worldCol, worldRow)!=' ' ? threadManager.isThreadAtPosition(worldCol, worldRow) : mapTileChar[worldRow][worldCol];
     
                 int worldX = worldCol * game.TILE_SIZE;
                 int worldY = worldRow * game.TILE_SIZE;
@@ -159,7 +173,8 @@ public class TileManager {
 
     public boolean isWalkable(int x, int y) {
         if (x >= 0 && y < game.maxWorldRow && y >= 0 && x < game.maxWorldCol) {
-            return mapTileChar[y][x] == '.';
+            if(threadManager.isCharacterAtPosition(x, y)==null) return mapTileChar[y][x] == '.' || mapTileChar[y][x] == 'g';
+            return false;
         } else {
             System.out.println("Out of bounds");
             return false;
