@@ -1,8 +1,10 @@
 package Elements;
 
+import GUI.GameGUI;
+
 public class LumberJack extends GameCharacter  {
-    public LumberJack(int x, int y,Puzzle puzzle,int id){
-        super(x, y, 1, 'X', puzzle,id);
+    public LumberJack(int x, int y,int id,GameGUI gui){
+        super(x, y, 1, 'X',id,gui);
     }
 
 

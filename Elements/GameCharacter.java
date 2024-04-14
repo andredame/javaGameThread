@@ -1,25 +1,25 @@
 package Elements;
 
+import GUI.GameGUI;
+
 public abstract class GameCharacter{
-    private int x;
-    private int y;
+    public int worldX;
+    public int worldY;
     private int vidas;
     private char symbol;
-    private Puzzle puzzle;
+    
     private int id;
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public GameCharacter(int x, int y, int vidas, char symbol,Puzzle puzzle,int id){
-        this.x = x;
-        this.y = y;
+    private GameGUI gui;
+    
+    
+    public GameCharacter(int worldX, int worldY, int vidas, char symbol,int id,GameGUI gui){
+        this.worldX = worldX;
+        this.worldY = worldY;
         this.vidas = vidas;
         this.symbol = symbol;
-        this.puzzle = puzzle;
+        
         this.id = id;
+        this.gui=gui;
     }
     public void setVidas(int vidas) {
         this.vidas = vidas;
@@ -27,31 +27,40 @@ public abstract class GameCharacter{
     public int getVidas() {
         return vidas;
     }
-    public void setX(int x) {
-        this.x = x;
+    public void setX(int worldX) {
+        this.worldX = worldX;
     }
-    public void setY(int y) {
-        this.y = y;
+    public void setY(int worldY) {
+        this.worldY = worldY;
     }
     public int getX() {
-        return x;
+        return worldX;
     }
     public int getY() {
-        return y;
+        return worldY;
     }
     public char getSymbol() {
         return symbol;
     }
 
-    public void setPuzzle(Puzzle puzzle) {
-        this.puzzle = puzzle;
+    public GameGUI getGui() {
+        return gui;
     }
+    public void setGui(GameGUI gui) {
+        this.gui = gui;
+    }
+
+    
     public void lostLife() {
         vidas--;
     }
 
-    public Puzzle getPuzzle() {
-        return puzzle;
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
     }
     public abstract boolean isAlive();
+
 }

@@ -1,20 +1,21 @@
 package Threads;
+
 import Elements.GameCharacter;
-import Elements.Puzzle;
 import GUI.GameGUI;
+import GUI.TileManager;
+
 public class CharacterThread extends Thread {
     private GameCharacter character;
-
-
-    private Puzzle puzzle;
-    private GameGUI maze;
+    private GameGUI game;
     private int identificador;
+    private TileManager tileManager;
+    private boolean canTakeDamage = true;
 
-    public CharacterThread(GameGUI maze,GameCharacter character, Puzzle puzzle,int id) {
+    public CharacterThread(GameGUI game, GameCharacter character, int id, TileManager tileManager) {
         this.character = character;
-        this.puzzle = puzzle;
-        this.maze = maze;
+        this.game = game;
         this.identificador = id;
+        this.tileManager = tileManager;
     }
 
     public int getIdentificador() {
@@ -32,49 +33,73 @@ public class CharacterThread extends Thread {
     @Override
     public void run() {
         while (character.isAlive()) {
-            int moveX = 0;
-            int moveY = 0;
-            int direction = (int) (Math.random() * 4); 
-            switch (direction) {
-                case 0: // cima
-                    moveX = -1;
-                    break;
-                case 1:
-                    moveX = 1;
-                    break;
-                case 2: // esquerda
-                    moveY = -1;
-                    break;
-                case 3: // direita
-                    moveY = 1;
-                    break;
-            }
-            int newX = character.getX() + moveX;
-            int newY = character.getY() + moveY;
-            if (
-                newX >= 0 && newX < puzzle.getHeight()
-                && newY >= 0 
-                && newY < puzzle.getWidth() 
-                && puzzle.isWalkable(newX, newY)
-                && !isCharacterAtPosition(newX, newY)
-            ) {
-                character.setX(newX);
-                character.setY(newY);
-            }
+            
+            moveCharacter();
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            maze.repaint();
-            if(character.isAlive() == false){
-                this.interrupt();
-            }
+            game.repaint();
         }
     }
 
-    private boolean isCharacterAtPosition(int x,int y) {
-        return false;
+    private void moveCharacter() {
+        int moveX = 0;
+        int moveY = 0;
+        int direction = (int) (Math.random() * 4);
+        switch (direction) {
+            case 0: 
+                moveX = -1;
+                break;
+            case 1: 
+                moveX = 1;
+                break;
+            case 2: 
+                moveY = -1;
+                break;
+            case 3: 
+                moveY = 1;
+                break;
+            default:
+                break;
+        } 
+        if (tileManager.isWalkable(character.getX() + moveX, character.getY() + moveY) && (game.getPlayer().getX() != character.getX() + moveX || game.getPlayer().getY() != character.getY() + moveY)) {
+            character.setX(character.getX() + moveX);
+            character.setY(character.getY() + moveY);                 
+        }
+
+        if(character instanceof Elements.Snake){
+            if(isAdjacentToPlayer()){
+                takeDamage();
+            }
+                
+        }
+    }
+
+    private boolean isAdjacentToPlayer(){
+        int playerX = game.getPlayer().getX() / game.TILE_SIZE;
+        int playerY = game.getPlayer().getY() / game.TILE_SIZE;
+        int characterX = character.getX() ;
+        int characterY = character.getY();
+        return Math.abs(playerX - characterX) + Math.abs(playerY - characterY) == 1;
+    }
+
+    private void takeDamage() {
+        if (canTakeDamage) {
+            game.getPlayer().lostLife(); 
+            System.out.println("Player lost life"+game.getPlayer().getVidas());
+            canTakeDamage = false; 
+            new java.util.Timer().schedule( 
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        canTakeDamage = true;
+                    }
+                }, 
+                5000 
+            );
+        }
     }
 
 }

@@ -1,8 +1,24 @@
 package Elements;
+
+import GUI.GameGUI;
+import GUI.TileManager;
+
+import java.awt.Graphics;
+
 public class Player extends GameCharacter{
     private int hasAxe = 0;
-    public Player(int x, int y, Puzzle puzzle,int id){
-        super(x, y, 3, 'P', puzzle,id);
+    public final int screenX;
+    public final int screenY;
+    private final int speed = 5;
+
+    public Player(int worldX, int worldY, int id,GameGUI gui){
+        super(worldX, worldY, 3, 'P',id,gui);
+        screenX=gui.SCREEN_WIDTH/2 - (gui.TILE_SIZE/2);
+        screenY=gui.SCREEN_HEIGHT/2 - (gui.TILE_SIZE/2);
+    }
+
+    public int getSpeed(){
+        return speed;
     }
 
     @Override
@@ -23,4 +39,13 @@ public class Player extends GameCharacter{
             hasAxe--;
         }
     }
+
+    public void update(){
+        draw(this.getGui().getGraphics());
+    }
+
+    public void draw(Graphics gui){
+        gui.drawImage(super.getGui().tileManager.getTileImage(String.valueOf(super.getSymbol())), screenX, screenY, super.getGui().TILE_SIZE, super.getGui().TILE_SIZE, null);
+    }
+
 }

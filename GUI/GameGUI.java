@@ -1,7 +1,10 @@
 package GUI;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
+
+import java.awt.image.*;
+//imageio
+import javax.imageio.ImageIO;
 
 import javax.swing.*;
 
@@ -12,149 +15,98 @@ import Threads.*;
 
 public class GameGUI extends JPanel implements KeyListener{
     private JFrame mainFrame;
-    private Puzzle puzzle;
-    private static int VISIBILITY_RADIUS = 50; // Defina o raio de visão do jogador aqui
-    private static final int CELL_SIZE = 27;
-    private static final int DESCRIPTION_OFFSET_Y = 20;
+    // private Puzzle puzzle;
+    public int VISIBILITY_RADIUS = 2; // Defina o raio de visão do jogador aqui
+    
+
+    //SCREEN SETTINGS
+    final int originalTileSize=16;
+    final int scale=3;
+    public final int TILE_SIZE = originalTileSize *scale;
+    final int maxScreenCol=16;
+    final int maxScreenRow=10;
+    public final int SCREEN_WIDTH = TILE_SIZE * maxScreenCol;
+    public final int SCREEN_HEIGHT = TILE_SIZE * maxScreenRow;
+
+    //world settings
+    public final int maxWorldCol=118;
+    public final int maxWorldRow=56;
+    public final int worldWidth = TILE_SIZE * maxWorldCol;
+    public final int worldHeight = TILE_SIZE * maxWorldRow;
+
+    public int id=0;
+
+    private final int DESCRIPTION_OFFSET_Y = 30;
    
-    private TileManager tileManager;
-    private final int  height;
+    public TileManager tileManager;
+    // private final int  height;
     private Direction lastDirection;
     private int idIterator = 0;
     //Threads 
     private ThreadManager threadManager;
-    private Player player ;
+    public Player player ;
     private boolean canTakeDamage=true;
 
 
     public GameGUI() {
-        this.player = new Player(1, 1, puzzle,idIterator++);
-        this.puzzle = new Puzzle();
-        this.tileManager = new TileManager(CELL_SIZE);
-        this.threadManager = new ThreadManager();
-        createCharacters();
         initializeWindow();
-        this.height = puzzle.getHeight();
+        this.player = new Player(1*TILE_SIZE, 2*TILE_SIZE,idIterator++,this);
+        this.threadManager = new ThreadManager();
+        this.tileManager = new TileManager(this,this.threadManager);
         this.lastDirection= Direction.NONE;
-        threadManager.startAllThreads();
     }
-
-
-
     private void initializeWindow() {
-        this.mainFrame = new JFrame("Maze Solver");
-        // IntroductionDialog dialog = new IntroductionDialog(mainFrame);
-        // dialog.setModal(true);
-        // dialog.setVisible(true);
-       
-         
+        this.mainFrame = new JFrame("Maze Solver"); 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.add(this);
-        mainFrame.setSize(800, 450);
+        mainFrame.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         mainFrame.addKeyListener(this);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
-
     }
 
+    public void draw(Graphics g, BufferedImage image, int x, int y) {
+        g.drawImage(image, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, null);
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        int width = puzzle.getWidth();
-        int height = puzzle.getHeight();
-        int playerX = player.getX();
-        int playerY = player.getY();
-        int distance=-1;
+        tileManager.draw(g);
+        player.draw(g);
+
+        String livesText = "Vidas: " + player.getVidas();
+        g.setColor(Color.BLACK); // Define a cor do texto para branco
+        g.setFont(new Font("Arial", Font.BOLD, 14)); // Define a fonte do texto
+        g.drawString(livesText, 10, 20); // Desenha o texto no canto da tela
+        drawHearts(g);
         
-        //get the size of the screen
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        double widthScreen = screenSize.getWidth();
-        double heightScreen = screenSize.getHeight();
-        System.out.println("Width: "+widthScreen+" Height: "+heightScreen);
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                char c = puzzle.getLocation(row, col);
-                distance = Math.abs(row - playerX) + Math.abs(col - playerY);
-                if (distance <= VISIBILITY_RADIUS) {
+    }
 
-                   g.drawImage(this.tileManager.getTileImage(String.valueOf('.')), col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
-                    BufferedImage tileImage = tileManager.getTileImage(String.valueOf(c));
-                    if (tileImage != null) {
-                        g.drawImage(tileImage, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
-                    }
-                } else {
-                    g.setColor(new Color(50, 54, 51));
-                    g.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                }
-            }
+    public void drawHearts(Graphics g){
+        BufferedImage heartImage=null;
+        try{
+            heartImage = ImageIO.read(getClass().getResource("/assets/heart.png"));
+
+        }catch (Exception e){
+            System.out.println("Erro ao carregar imagem do coração");
         }
-        drawThreads(g);
-        draw(g, this.tileManager.getTileImage(String.valueOf(player.getSymbol())), playerX, playerY);
-        
-        drawHeart(g);
+        int heartsX = 10;
+        int heartsY = 20;
 
-    }
-
-
-    private void createCharacters(){
-        LumberJack lumberJack = new LumberJack(12, 27, puzzle,idIterator++);
-        threadManager.addThread(new CharacterThread(this, lumberJack, puzzle, idIterator++));
-    
-        Snake s1 = new Snake(5, 50, puzzle,idIterator++);
-        threadManager.addThread(new CharacterThread(this, s1, puzzle, idIterator++));
-    
-        Snake s2 = new Snake(9, 42, puzzle,idIterator++);
-        threadManager.addThread(new CharacterThread(this, s2, puzzle, idIterator++));
-    
-        Snake s3 = new Snake(1, 43, puzzle,idIterator++);
-        threadManager.addThread(new CharacterThread(this, s3, puzzle, idIterator++));
-
-        Snake s4 = new Snake(1, 44, puzzle,idIterator++);
-        threadManager.addThread(new CharacterThread(this, s4, puzzle, idIterator++));
-    }
-
-
-    private void drawThreads(Graphics g) {
-        int playerX = player.getX();
-        int playerY = player.getY();
-    
-        for (Thread thread : threadManager.getThreads().values()) {
-            if (thread instanceof CharacterThread) {
-                CharacterThread characterThread = (CharacterThread) thread;
-                if (characterThread.getCharacter().isAlive()) {
-                    GameCharacter character = characterThread.getCharacter();
-                    int characterX = character.getX();
-                    int characterY = character.getY();
-
-                    int distance = Math.abs(playerX - characterX) + Math.abs(playerY - characterY);
-
-                    if (distance <= VISIBILITY_RADIUS) {
-                        draw(g, this.tileManager.getTileImage(String.valueOf(character.getSymbol())), characterX, characterY);
-                    }
-
-                    if( isAdjacentToSnake(playerX, playerY)){
-                        takeDamage();
-                        setCanTakeDamage(false);
-                    }
-
-
-                } else {
-                    threadManager.removeThread(characterThread.getIdentificador(), thread);
-                }
-            }
-
-            if (thread instanceof ThrowableThread) {
-                ThrowableThread throwableThread = (ThrowableThread) thread;
-                int x = throwableThread.getX();
-                int y = throwableThread.getY();
-                int distance = Math.abs(playerX - x) + Math.abs(playerY - y);
-                if (distance <= VISIBILITY_RADIUS) {
-                    draw(g, this.tileManager.getTileImage(String.valueOf(throwableThread.getSymbol())), x, y);
-                }
-            }
+        // Desenhe uma imagem de coração para cada vida do jogador
+        int lives = player.getVidas();
+        for (int i = 0; i < lives; i++) {
+            int heartPosX = heartsX + (i * (heartImage.getWidth() + 5)); // Adicione um espaço de 5 pixels entre os corações
+            int heartPosY = heartsY;
+            g.drawImage(heartImage, heartPosX, heartPosY, null);
         }
+
     }
+
+
+
+
 
     private void takeDamage(){
         if(canTakeDamage){
@@ -178,111 +130,105 @@ public class GameGUI extends JPanel implements KeyListener{
     }
 
 
-
-
-    private void draw(Graphics g, Image image,int x, int y) {
-        g.drawImage(image, y * CELL_SIZE, x * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
-    }
-    
-    private void drawHeart(Graphics g){
-        String coracoes="";
-        for(int i=0; i<player.getVidas(); i++){
-            coracoes+="♥";
-        }
-        g.setColor(Color.RED);
-        Font fonte2 = new Font("Segoe UI Emoji", Font.PLAIN, 20); 
-        g.setFont(fonte2);
-        g.drawString( coracoes, 20, height * CELL_SIZE + DESCRIPTION_OFFSET_Y);
-    }
-        @Override
+    @Override
     public void keyPressed(KeyEvent e) {
         int x = player.getX();
         int y = player.getY();
-
+        x = x / TILE_SIZE;
+        y = y / TILE_SIZE;
+    
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
-                x--; // Movimento para cima, então diminui o valor de y
-                this.lastDirection=Direction.UP;
-
+                this.lastDirection = Direction.UP;
+                if (tileManager.isWalkable(x, y - 1)) {
+                    player.setY((y - 1)*TILE_SIZE);
+                }
                 break;
             case KeyEvent.VK_DOWN:
-                x++; 
-                this.lastDirection=Direction.DOWN;
+                this.lastDirection = Direction.DOWN;
 
+                if (tileManager.isWalkable(x, y + 1)) {
+                    player.setY((y + 1)*TILE_SIZE);
+                }
                 break;
             case KeyEvent.VK_LEFT:
-                y--; 
-                this.lastDirection=Direction.LEFT;
+                this.lastDirection = Direction.LEFT;
+
+                if (tileManager.isWalkable(x - 1, y)) {
+                    player.setX((x - 1)*TILE_SIZE);
+                }
                 break;
             case KeyEvent.VK_RIGHT:
-                y++; 
-                this.lastDirection=Direction.RIGHT;
-
+                this.lastDirection = Direction.RIGHT;
+                if (tileManager.isWalkable(x + 1, y)) {
+                    player.setX((x + 1)*TILE_SIZE);
+                }
                 break;
+
+            //apertar E 
             case KeyEvent.VK_E:
-                if (isAdjacentToLumberJack(x, y)) {
-                    JOptionPane.showMessageDialog(mainFrame, "Você deve achar um machado, porque algumas páginas podem estar entre as árvores.", "Atenção", JOptionPane.INFORMATION_MESSAGE);
+                if(isAdjacentToALamp()){
+                    this.VISIBILITY_RADIUS+=2;
                 }
-
-                if(isAdjacentToLamp(x, y)){
-                    VISIBILITY_RADIUS+=1;
-                    return;
-                }
-
-                if(isAdjacentToAxe(x, y)){
+                if( isAdjacentToAAxe()){
+                    System.out.println("true");
                     player.setHasAxe(8);
-                    return;
                 }
                 break;
+
             case KeyEvent.VK_SPACE:
-                if(player.hasAxe() > 0){
+                if(player.hasAxe()>0){
                     startThrowable();
+                    player.throwAxe();
                 }
                 break;
-                case KeyEvent.VK_R:
-                    
-            default:
-            
-                break;
         }
-        
-        
-        movePlayer(x, y);
-        
-    }
-
-
-    public void movePlayer(int x, int y){
-        if (x >= 0 && x < puzzle.getHeight() && y >= 0 && y < puzzle.getWidth()) {
-            char c = puzzle.getLocation(x, y);
-            if(threadManager.isCharacterAtPosition(x, y)){
-                return;
-            }
-            if (c == '.') {
-                player.setX(x);
-                player.setY(y);
-            } 
-        }
+    
         repaint();
-
     }
-
-
-
 
     public void startThrowable() {
         if (lastDirection != Direction.NONE) {
             int x = player.getX();
             int y = player.getY();
             player.throwAxe();
-            ThrowableThread throwableThread = new ThrowableThread(this, x, y, lastDirection, puzzle, idIterator++,"A");
+            ThrowableThread throwableThread = new ThrowableThread(this, x/TILE_SIZE, y/TILE_SIZE, lastDirection, id++,"A",this.tileManager);
             threadManager.addThread(throwableThread);
             throwableThread.start();
         }
     }
 
+    private boolean isAdjacentToALamp(){
+        int playerX = player.getX() / TILE_SIZE;
+        int playerY = player.getY() / TILE_SIZE;
+        for(int i = -1; i<=1;i++){
+            for(int j = -1; j<=1;j++){
+                if(tileManager.getTile(playerX+i,playerY+j) == 'L'){
+                    VISIBILITY_RADIUS+=1;
+                    tileManager.getObjectOfTheGround(playerX+i,playerY+j);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-    
+
+
+    private boolean isAdjacentToAAxe(){
+        int playerX = player.getX() / TILE_SIZE;
+        int playerY = player.getY() / TILE_SIZE;
+        for(int i = -1; i<=1;i++){
+            for(int j = -1; j<=1;j++){
+                if(tileManager.getTile(playerX+i,playerY+j) == 'A'){
+                    tileManager.getObjectOfTheGround(playerX+i,playerY+j);
+                    return true;
+                }
+            }
+        }
+        return false;
+
+    }
   
 
     @Override
@@ -291,108 +237,6 @@ public class GameGUI extends JPanel implements KeyListener{
 
     @Override
     public void keyReleased(KeyEvent e) {
-    }
-
-    private boolean isAdjacentToSnake(int x, int y) {
-        for (Thread thread : threadManager.getThreads().values()) {
-            if (thread instanceof CharacterThread) {
-                CharacterThread characterThread = (CharacterThread) thread;
-                if (characterThread.getCharacter() instanceof Snake) {
-                    Snake snake = (Snake) characterThread.getCharacter();
-                    int snakeX = snake.getX();
-                    int snakeY = snake.getY();
-                    if (Math.abs(x - snakeX) == 1 && y == snakeY) {
-                        return true;
-                    }
-                    if (Math.abs(y - snakeY) == 1 && x == snakeX) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-
-    private boolean isAdjacentToLumberJack(int x, int y) {
-        int lumberJackX = -1;
-        int lumberJackY = -1;
-        for (Thread thread : threadManager.getThreads().values()) {
-            if (thread instanceof CharacterThread) {
-                CharacterThread characterThread = (CharacterThread) thread;
-                if (characterThread.getCharacter() instanceof LumberJack) {
-                    lumberJackX = characterThread.getCharacter().getX();
-                    lumberJackY = characterThread.getCharacter().getY();
-                    break;
-                }
-            }
-        }
-    
-        if (lumberJackX != -1 && lumberJackY != -1) {
-            if (Math.abs(x - lumberJackX) == 1 && y == lumberJackY) {
-                return true;
-            }
-            if (Math.abs(y - lumberJackY) == 1 && x == lumberJackX) {
-                return true; 
-            }
-        }
-    
-        return false; 
-    }
-
-    private boolean isAdjacentToAxe(int x , int y){
-        int axeX = -1;
-        int axeY = -1;
-        for(int i=-1; i<2; i++){
-            for(int j=-1; j<2; j++){
-                if(puzzle.getLocation(x+i, y+j) == 'A'){
-                    axeX = x+i;
-                    axeY = y+j;
-                    break;
-                }
-            }
-        }
-    
-        if (axeX != -1 && axeY != -1) {
-            if (Math.abs(x - axeX) == 1 && y == axeY) {
-                puzzle.setLocation(axeX, axeY, '.');
-                return true;
-            }
-            if (Math.abs(y - axeY) == 1 && x == axeX) {
-                puzzle.setLocation(axeX, axeY, '.');
-                return true; 
-            }
-        }
-    
-        return false;
-    }
-
-    
-
-    private boolean isAdjacentToLamp (int x, int y) {
-        int lampX = -1;
-        int lampY = -1;
-        for (int i=-1; i<2; i++){
-            for (int j=-1; j<2; j++){
-                if (puzzle.getLocation(x+i, y+j) == 'L'){
-                    lampX = x+i;
-                    lampY = y+j;
-                    break;
-                }
-            }
-        }
-        if (lampX != -1 && lampY != -1) {
-            if (Math.abs(x - lampX) == 1 && y == lampY) {
-                puzzle.setLocation(lampX, lampY, '.');
-                return true;
-            }
-            if (Math.abs(y - lampY) == 1 && x == lampX) {
-                puzzle.setLocation(lampX, lampY, '.');
-                return true; 
-            }
-        }
-    
-        return false; 
     }
 
     public ThreadManager getThreadManager() {
