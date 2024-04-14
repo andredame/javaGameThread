@@ -42,7 +42,9 @@ public class TileManager {
             BufferedImage witchTentImage = resizeImage("/assets/witch_tent.png", 16, 16);
             BufferedImage snakeImage = resizeImage("/assets/snake.png", 16, 16);
             BufferedImage mapImage = resizeImage("/assets/map.png", 16, 16);
+            BufferedImage heartImage = resizeImage("/assets/heart.png", 10, 10);
 
+            tileImages.put("hrt",heartImage);
             tileImages.put("#", treeImage);
             tileImages.put("T", treeImage);
             tileImages.put("A", axeImage);

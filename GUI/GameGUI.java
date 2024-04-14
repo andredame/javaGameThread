@@ -74,34 +74,17 @@ public class GameGUI extends JPanel implements KeyListener{
         super.paintComponent(g);
         tileManager.draw(g);
         player.draw(g);
-
-        String livesText = "Vidas: " + player.getVidas();
-        g.setColor(Color.BLACK); // Define a cor do texto para branco
-        g.setFont(new Font("Arial", Font.BOLD, 14)); // Define a fonte do texto
-        g.drawString(livesText, 10, 20); // Desenha o texto no canto da tela
         drawHearts(g);
         
     }
 
     public void drawHearts(Graphics g){
-        BufferedImage heartImage=null;
-        try{
-            heartImage = ImageIO.read(getClass().getResource("/assets/heart.png"));
-
-        }catch (Exception e){
-            System.out.println("Erro ao carregar imagem do coração");
+        int x = 10;
+        int y = 30;
+        for(int i = 0; i<player.getVidas();i++){
+            g.drawImage(tileManager.getTileImage("hrt"), x, y, TILE_SIZE, TILE_SIZE, null);
+            x+=TILE_SIZE;
         }
-        int heartsX = 10;
-        int heartsY = 20;
-
-        // Desenhe uma imagem de coração para cada vida do jogador
-        int lives = player.getVidas();
-        for (int i = 0; i < lives; i++) {
-            int heartPosX = heartsX + (i * (heartImage.getWidth() + 5)); // Adicione um espaço de 5 pixels entre os corações
-            int heartPosY = heartsY;
-            g.drawImage(heartImage, heartPosX, heartPosY, null);
-        }
-
     }
 
 
