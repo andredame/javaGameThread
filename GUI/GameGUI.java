@@ -34,7 +34,6 @@ public class GameGUI extends JPanel implements KeyListener{
 
     public int id=0;
     public TileManager tileManager;
-    // private final int  height;
     private Direction lastDirection;
     private int idIterator = 0;
     //Threads 
@@ -77,7 +76,7 @@ public class GameGUI extends JPanel implements KeyListener{
         int x = 10;
         int y = 30;
         for(int i = 0; i<player.getVidas();i++){
-            g.drawImage(tileManager.getTileImage("4"), x, y, TILE_SIZE, TILE_SIZE, null);
+            g.drawImage(tileManager.getTileImage("100"), x, y, TILE_SIZE, TILE_SIZE, null);
             x+=TILE_SIZE;
         }
     }
@@ -177,7 +176,7 @@ public class GameGUI extends JPanel implements KeyListener{
         int playerY = player.getY() / TILE_SIZE;
         for(int i = -1; i<=1;i++){
             for(int j = -1; j<=1;j++){
-                if(tileManager.getTile(playerX+i,playerY+j) == '4' ){
+                if(tileManager.getTile(playerX+i,playerY+j) == '9' ){
                     tileManager.getObjectOfTheGround(playerX+i,playerY+j);
                     return true;
                 }

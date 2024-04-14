@@ -35,19 +35,16 @@ public class TileManager {
             BufferedImage lampImage = resizeImage("/assets/lamp.png", 16, 16);
             BufferedImage houseImage = resizeImage("/assets/house.png", 16, 16);
             BufferedImage carImage = resizeImage("/assets/car_crash.png", 16, 16);
-            BufferedImage lakeImage = resizeImage("/assets/water.png", 16, 16);
-            BufferedImage bridgeImage = resizeImage("/assets/bridge_lake.png", 16, 16);
             BufferedImage lumberjackImage = resizeImage("/assets/lumberjack.png", 16, 16);
             BufferedImage playerImage = resizeImage("/assets/player.png", 16, 16);
             BufferedImage earthImage = resizeImage("/assets/earth.png", 16, 16);
-            BufferedImage witchTentImage = resizeImage("/assets/witch_tent.png", 16, 16);
             BufferedImage snakeImage = resizeImage("/assets/snake.png", 16, 16);
             BufferedImage mapImage = resizeImage("/assets/map.png", 16, 16);
             BufferedImage heartImage = resizeImage("/assets/heart.png", 10, 10);
             BufferedImage grassImage = resizeImage("/assets/grass.png", 16, 16);
-            BufferedImage roadImage = resizeImage("/assets/road.png", 16, 16);
-            tileImages.put("4",heartImage);
-            tileImages.put("r",roadImage);
+            BufferedImage steeringWheelImage = resizeImage("/assets/steeringWheel.png", 16, 16);
+            tileImages.put("9",heartImage);
+            tileImages.put("1", steeringWheelImage);
             tileImages.put("g",grassImage);
             tileImages.put("#", treeImage);
             tileImages.put("T", treeImage);
@@ -56,12 +53,9 @@ public class TileManager {
             tileImages.put("M", mapImage);
             tileImages.put("H", houseImage);
             tileImages.put("C", carImage);
-            tileImages.put("W", lakeImage);
-            tileImages.put("B", bridgeImage);
             tileImages.put("X", lumberjackImage);
             tileImages.put("P", playerImage);
             tileImages.put(".", earthImage);
-            tileImages.put("Z", witchTentImage);
             tileImages.put("S", snakeImage);
         } catch (IOException e) {
             System.out.println("Erro ao carregar imagens dos tiles" + e);
@@ -72,8 +66,6 @@ public class TileManager {
     public void removeThread(int id, CharacterThread thread) {
         threadManager.removeThread(id, thread);
     }
-
-
 
     public void getObjectOfTheGround(int x,int y){
         mapTileChar[y][x] = '.';
