@@ -76,7 +76,7 @@ public class GameGUI extends JPanel implements KeyListener{
         int x = 10;
         int y = 30;
         for(int i = 0; i<player.getVidas();i++){
-            g.drawImage(tileManager.getTileImage("100"), x, y, TILE_SIZE, TILE_SIZE, null);
+            g.drawImage(tileManager.getTileImage("9"), x, y, TILE_SIZE, TILE_SIZE, null);
             x+=TILE_SIZE;
         }
     }
@@ -159,7 +159,12 @@ public class GameGUI extends JPanel implements KeyListener{
         int playerY = player.getY() / TILE_SIZE;
         for(int i = -1; i<=1;i++){
             for(int j = -1; j<=1;j++){
-                if(tileManager.getTile(playerX+i,playerY+j) == 'M' ){
+                if(tileManager.getTile(playerX+i,playerY+j) == '1'||
+                tileManager.getTile(playerX+i,playerY+j) == '2'||
+                tileManager.getTile(playerX+i,playerY+j) == '3'||
+                tileManager.getTile(playerX+i,playerY+j) == '4'||
+                tileManager.getTile(playerX+i,playerY+j) == '5'
+                ){
                     tileManager.getObjectOfTheGround(playerX+i,playerY+j);
                     toolsFound++;
                     return true;
