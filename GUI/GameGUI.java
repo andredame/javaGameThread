@@ -2,8 +2,9 @@ package GUI;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+
 import javax.swing.*;
+
 
 import Elements.*;
 import Elements.GameCharacter;
@@ -12,7 +13,7 @@ import Threads.*;
 public class GameGUI extends JPanel implements KeyListener{
     private JFrame mainFrame;
     private Puzzle puzzle;
-    private static int VISIBILITY_RADIUS = 5; // Defina o raio de visão do jogador aqui
+    private static int VISIBILITY_RADIUS = 50; // Defina o raio de visão do jogador aqui
     private static final int CELL_SIZE = 27;
     private static final int DESCRIPTION_OFFSET_Y = 20;
    
@@ -20,22 +21,16 @@ public class GameGUI extends JPanel implements KeyListener{
     private final int  height;
     private Direction lastDirection;
     private int idIterator = 0;
-
-    private int cameraX;
-    private int cameraY;
-
-
     //Threads 
     private ThreadManager threadManager;
-
     private Player player ;
-
+    private boolean canTakeDamage=true;
 
 
     public GameGUI() {
         this.player = new Player(1, 1, puzzle,idIterator++);
         this.puzzle = new Puzzle();
-        this.tileManager = new TileManager();
+        this.tileManager = new TileManager(CELL_SIZE);
         this.threadManager = new ThreadManager();
         createCharacters();
         initializeWindow();
@@ -71,13 +66,15 @@ public class GameGUI extends JPanel implements KeyListener{
         int playerX = player.getX();
         int playerY = player.getY();
         int distance=-1;
-    
+        
+        //get the size of the screen
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double widthScreen = screenSize.getWidth();
+        double heightScreen = screenSize.getHeight();
+        System.out.println("Width: "+widthScreen+" Height: "+heightScreen);
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 char c = puzzle.getLocation(row, col);
-                if(c == '1' || c == '2' || c == '3' ){
-                    System.out.println("row:"+ row + " col:"+ col );
-                }                
                 distance = Math.abs(row - playerX) + Math.abs(col - playerY);
                 if (distance <= VISIBILITY_RADIUS) {
 
@@ -96,7 +93,6 @@ public class GameGUI extends JPanel implements KeyListener{
         draw(g, this.tileManager.getTileImage(String.valueOf(player.getSymbol())), playerX, playerY);
         
         drawHeart(g);
-        
 
     }
 
@@ -137,6 +133,12 @@ public class GameGUI extends JPanel implements KeyListener{
                         draw(g, this.tileManager.getTileImage(String.valueOf(character.getSymbol())), characterX, characterY);
                     }
 
+                    if( isAdjacentToSnake(playerX, playerY)){
+                        takeDamage();
+                        setCanTakeDamage(false);
+                    }
+
+
                 } else {
                     threadManager.removeThread(characterThread.getIdentificador(), thread);
                 }
@@ -153,6 +155,30 @@ public class GameGUI extends JPanel implements KeyListener{
             }
         }
     }
+
+    private void takeDamage(){
+        if(canTakeDamage){
+            player.lostLife();
+        }
+    }
+
+    public void setCanTakeDamage(boolean value){
+        canTakeDamage = value;
+        if(!value){
+            new java.util.Timer().schedule( 
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        canTakeDamage = true;
+                    }
+                }, 
+                5000 
+            );
+        }
+    }
+
+
+
 
     private void draw(Graphics g, Image image,int x, int y) {
         g.drawImage(image, y * CELL_SIZE, x * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
@@ -204,7 +230,7 @@ public class GameGUI extends JPanel implements KeyListener{
                 }
 
                 if(isAdjacentToAxe(x, y)){
-                    player.setHasAxe(5);
+                    player.setHasAxe(8);
                     return;
                 }
                 break;
@@ -222,6 +248,7 @@ public class GameGUI extends JPanel implements KeyListener{
         
         
         movePlayer(x, y);
+        
     }
 
 
@@ -237,6 +264,7 @@ public class GameGUI extends JPanel implements KeyListener{
             } 
         }
         repaint();
+
     }
 
 
@@ -263,6 +291,26 @@ public class GameGUI extends JPanel implements KeyListener{
 
     @Override
     public void keyReleased(KeyEvent e) {
+    }
+
+    private boolean isAdjacentToSnake(int x, int y) {
+        for (Thread thread : threadManager.getThreads().values()) {
+            if (thread instanceof CharacterThread) {
+                CharacterThread characterThread = (CharacterThread) thread;
+                if (characterThread.getCharacter() instanceof Snake) {
+                    Snake snake = (Snake) characterThread.getCharacter();
+                    int snakeX = snake.getX();
+                    int snakeY = snake.getY();
+                    if (Math.abs(x - snakeX) == 1 && y == snakeY) {
+                        return true;
+                    }
+                    if (Math.abs(y - snakeY) == 1 && x == snakeX) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 
@@ -292,7 +340,7 @@ public class GameGUI extends JPanel implements KeyListener{
         return false; 
     }
 
-    private boolean isAdjacentToAxe (int x , int y){
+    private boolean isAdjacentToAxe(int x , int y){
         int axeX = -1;
         int axeY = -1;
         for(int i=-1; i<2; i++){
@@ -347,11 +395,12 @@ public class GameGUI extends JPanel implements KeyListener{
         return false; 
     }
 
-
-
     public ThreadManager getThreadManager() {
         return threadManager;
     }
 
 
+    public Player getPlayer() {
+        return player;
+    }
 }

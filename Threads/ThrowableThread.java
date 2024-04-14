@@ -9,7 +9,7 @@ public class ThrowableThread extends Thread {
     private int x;
     private int y;
     private final Direction direction;
-    private static final int speed = 500;
+    private static final int speed = 250;
     private final Puzzle puzzle;
     private final GameGUI maze;
     private final int identificador;
@@ -34,17 +34,11 @@ public class ThrowableThread extends Thread {
         do {
             try {
                 moveInDirection();
-                Thread.sleep(200);
+                Thread.sleep(150);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             
-            GameCharacter character = hitCharacter();
-            if (character != null) {
-                character.lostLife();
-                maze.getThreadManager().removeThread(identificador, this);
-                break;
-            }
             if(foundTree()){
                 maze.getThreadManager().removeThread(identificador, this);
                 puzzle.setLocation(x, y, '.');
@@ -77,21 +71,6 @@ public class ThrowableThread extends Thread {
     public void setY(int y) {
         this.y = y;
     }
-
-    private GameCharacter hitCharacter() {
-        for (Thread thread : maze.getThreadManager().getThreads().values()) {
-            if (thread instanceof CharacterThread) {
-                CharacterThread characterThread = (CharacterThread) thread;
-                GameCharacter character = characterThread.getCharacter();
-                if (character.getX() == x && character.getY() == y) {
-                    return character;
-                }
-            }
-        }
-        return null;
-    }
-
-
     private void moveInDirection() {
         switch (direction) {
             case UP:

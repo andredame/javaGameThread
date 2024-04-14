@@ -8,16 +8,17 @@ import javax.imageio.ImageIO;
 
 public class TileManager {
     private Map<String, BufferedImage> tileImages;
+    private final int CELL_SIZE;
     
 
-    public TileManager() {
+    public TileManager(int cellSize) {
+        this.CELL_SIZE = cellSize;
         tileImages = new HashMap<>();
         // Adicionar imagens aos símbolos correspondentes
         try {
             BufferedImage treeImage = ImageIO.read(new File("./assets/tree.png"));
             BufferedImage axeImage = ImageIO.read(new File("./assets/axe.png"));
             BufferedImage lampImage = ImageIO.read(new File("./assets/lamp.png"));
-            BufferedImage mapImage = ImageIO.read(new File("./assets/map.png"));
             BufferedImage houseImage = ImageIO.read(new File("./assets/house.png"));
             BufferedImage carImage = ImageIO.read(new File("./assets/car_crash.png"));
             BufferedImage lakeImage = ImageIO.read(new File("./assets/lake.png"));
@@ -27,6 +28,9 @@ public class TileManager {
             BufferedImage stoneImage = ImageIO.read(new File("./assets/stone.png"));
             BufferedImage witchTentImage = ImageIO.read(new File("./assets/witch_tent.png"));
             BufferedImage snakeImage = ImageIO.read(new File("./assets/snake.png"));
+            BufferedImage mapImage = ImageIO.read(new File("./assets/map.png"));
+
+            
 
             tileImages.put("#", treeImage);
             tileImages.put("T", treeImage);

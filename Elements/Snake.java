@@ -10,4 +10,5 @@ public class Snake extends GameCharacter {
         return getVidas() > 0;
     }
     
+    
 }
