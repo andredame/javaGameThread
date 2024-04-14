@@ -39,7 +39,8 @@ public class GameGUI extends JPanel implements KeyListener{
     private int idIterator = 0;
     //Threads 
     private ThreadManager threadManager;
-    public Player player ;
+    public Player player;
+    private int toolsFound=0;
 
 
     public GameGUI() {
@@ -125,6 +126,9 @@ public class GameGUI extends JPanel implements KeyListener{
                 if(isAdjacentToHeart()){
                     player.addVida();
                 }
+                if(isAdjacentToTool()){
+
+                }
                 break;
 
             case KeyEvent.VK_SPACE:
@@ -151,12 +155,29 @@ public class GameGUI extends JPanel implements KeyListener{
         }
     }
 
+    private boolean isAdjacentToTool(){
+        int playerX = player.getX() / TILE_SIZE;
+        int playerY = player.getY() / TILE_SIZE;
+        for(int i = -1; i<=1;i++){
+            for(int j = -1; j<=1;j++){
+                if(tileManager.getTile(playerX+i,playerY+j) == 'M' ){
+                    tileManager.getObjectOfTheGround(playerX+i,playerY+j);
+                    toolsFound++;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    
+
     private boolean isAdjacentToHeart(){
         int playerX = player.getX() / TILE_SIZE;
         int playerY = player.getY() / TILE_SIZE;
         for(int i = -1; i<=1;i++){
             for(int j = -1; j<=1;j++){
-                if(tileManager.getTile(playerX+i,playerY+j) == '4'){
+                if(tileManager.getTile(playerX+i,playerY+j) == '4' ){
                     tileManager.getObjectOfTheGround(playerX+i,playerY+j);
                     return true;
                 }
