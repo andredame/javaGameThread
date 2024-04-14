@@ -27,8 +27,8 @@ public class GameGUI extends JPanel implements KeyListener{
     public final int SCREEN_HEIGHT = TILE_SIZE * maxScreenRow;
 
     //world settings
-    public final int maxWorldCol=118;
-    public final int maxWorldRow=56;
+    public final int maxWorldCol=66;
+    public final int maxWorldRow=30;
     public final int worldWidth = TILE_SIZE * maxWorldCol;
     public final int worldHeight = TILE_SIZE * maxWorldRow;
 
