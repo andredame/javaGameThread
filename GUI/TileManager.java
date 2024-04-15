@@ -35,7 +35,7 @@ public class TileManager {
             BufferedImage lampImage = resizeImage("/assets/lamp.png", 16, 16);
             BufferedImage carImage = resizeImage("/assets/car_crash.png", 16, 16);
             BufferedImage lumberjackImage = resizeImage("/assets/lumberjack.png", 16, 16);
-            BufferedImage playerImage = resizeImage("/assets/player.png", 16, 16);
+            BufferedImage playerImage = resizeImage("/assets/image.png", 16, 16);
             BufferedImage earthImage = resizeImage("/assets/earth.png", 16, 16);
             BufferedImage snakeImage = resizeImage("/assets/snake.png", 16, 16);
             BufferedImage heartImage = resizeImage("/assets/heart.png", 10, 10);
