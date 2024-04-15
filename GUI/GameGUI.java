@@ -90,6 +90,7 @@ public class GameGUI extends JPanel implements KeyListener{
         tileManager.draw(g);
         player.draw(g);
         drawTab(g);
+        drawLifeAxes(g);
         drawToolsFound(g);
         
     }
@@ -102,7 +103,24 @@ public class GameGUI extends JPanel implements KeyListener{
             g.drawImage(tileManager.getTileImage("9"), x, y, TILE_SIZE, TILE_SIZE, null);
             x+=TILE_SIZE;
         }
+    
+    }
 
+    public void drawLifeAxes(Graphics g){
+        int numAxe = player.hasAxe();
+        Color color;
+    
+        if(numAxe > 5){
+            color = Color.GREEN;
+        } else if(numAxe > 2){
+            color = Color.YELLOW;
+        } else {
+            color = Color.RED;
+        }
+    
+        g.setColor(color);
+        g.setFont(new Font("Arial", Font.BOLD, 30));
+        g.drawString("Axes: " + numAxe, 300, 25);
     }
 
     public void drawToolsFound(Graphics g) {
@@ -153,7 +171,6 @@ public class GameGUI extends JPanel implements KeyListener{
                 }
                 if( isAdjacentToAAxe()){
                     if(firstTimeAxed){
-                        //aparecer uma mensagem 
                         firstTimeAxed = false;
                         JOptionPane.showMessageDialog(mainFrame, "You found an axe! Press 'Space' to throw it. You can chop down trees or kill snakes with it.");
                     }
@@ -179,7 +196,6 @@ public class GameGUI extends JPanel implements KeyListener{
             case KeyEvent.VK_SPACE:
                 if(player.hasAxe()>0){
                     startThrowable();
-                    player.throwAxe();
                 }
                 break;
         }

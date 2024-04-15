@@ -14,7 +14,6 @@ import javax.imageio.ImageIO;
 
 import Threads.CharacterThread;
 import Threads.ThreadManager;
-import Elements.GameCharacter;
 import Elements.Snake;
 
 public class TileManager {

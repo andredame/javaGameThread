@@ -1,7 +1,6 @@
 package Elements;
 
 import GUI.GameGUI;
-import GUI.TileManager;
 
 import java.awt.Graphics;
 
@@ -12,7 +11,7 @@ public class Player extends GameCharacter{
     private final int speed = 5;
 
     public Player(int worldX, int worldY, int id,GameGUI gui){
-        super(worldX, worldY, 3, 'P',id,gui);
+        super(worldX, worldY, 5, 'P',id,gui);
         screenX=gui.SCREEN_WIDTH/2 - (gui.TILE_SIZE/2);
         screenY=gui.SCREEN_HEIGHT/2 - (gui.TILE_SIZE/2);
     }
@@ -35,6 +34,7 @@ public class Player extends GameCharacter{
     }
 
     public void throwAxe(){
+        System.out.println(hasAxe);
         if(hasAxe > 0){
             hasAxe--;
         }
@@ -49,7 +49,7 @@ public class Player extends GameCharacter{
     }
 
     public void addVida(){
-        if(getVidas() < 3){
+        if(getVidas() < 5){
             setVidas(getVidas()+1);
         }
     }
