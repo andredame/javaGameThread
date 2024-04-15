@@ -102,7 +102,7 @@ public class GameGUI extends JPanel implements KeyListener{
     }
 
     public void drawToolsFound(Graphics g) {
-        g.setColor(Color.BLACK); 
+        g.setColor(Color.RED); 
         g.setFont(new Font("Arial", Font.BOLD, 30)); 
         g.drawString("Tools Found: " + toolsFound, 15, 25);
     }

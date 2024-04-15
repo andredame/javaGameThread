@@ -1,5 +1,6 @@
 package GUI;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -152,6 +153,10 @@ public class TileManager {
                     g.drawImage(backgroundTileImage, screenX, screenY, game.TILE_SIZE, game.TILE_SIZE, null);
                 } else {
                     tileImage = getTileImage("Fog");
+                    // Define a cor de fundo como cinza para células fora do raio de visibilidade
+                    //color #3333333
+                    g.setColor(new Color(51, 51, 51));
+                    g.fillRect(screenX, screenY, game.TILE_SIZE, game.TILE_SIZE);
                 }
                 
                 g.drawImage(tileImage, screenX, screenY, game.TILE_SIZE, game.TILE_SIZE, null);
