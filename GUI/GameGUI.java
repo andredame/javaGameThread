@@ -46,13 +46,13 @@ public class GameGUI extends JPanel implements KeyListener{
 
     public GameGUI() {
         
-        try{
-            initializeWindow();
-        showIntroductionDialog();
-        this.player = new Player(1*TILE_SIZE, 2*TILE_SIZE,idIterator++,this);
         this.lastDirection= Direction.NONE;
+        this.player = new Player(1*TILE_SIZE, 2*TILE_SIZE,idIterator++,this);
         this.threadManager = new ThreadManager();
         this.tileManager = new TileManager(this,this.threadManager);
+        try{
+            showIntroductionDialog();
+            initializeWindow();
         }catch(Exception e){
             e.printStackTrace();
         }
