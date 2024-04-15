@@ -49,8 +49,6 @@ public abstract class GameCharacter{
     public void setGui(GameGUI gui) {
         this.gui = gui;
     }
-
-    
     public void lostLife() {
         vidas--;
     }

@@ -14,7 +14,7 @@ import Threads.*;
 public class GameGUI extends JPanel implements KeyListener{
     private JFrame mainFrame;
     // private Puzzle puzzle;
-    public int VISIBILITY_RADIUS = 2; // Defina o raio de visão do jogador aqui
+    public int VISIBILITY_RADIUS = 20; 
     
 
     //SCREEN SETTINGS
@@ -42,6 +42,8 @@ public class GameGUI extends JPanel implements KeyListener{
     private int toolsFound=0;
     private boolean firstTime = true;
     private boolean firstTimeAxed = true;   
+    private boolean talkedToLumberjack = false;
+    
 
 
     public GameGUI() {
@@ -172,9 +174,15 @@ public class GameGUI extends JPanel implements KeyListener{
                 if( isAdjacentToAAxe()){
                     if(firstTimeAxed){
                         firstTimeAxed = false;
-                        JOptionPane.showMessageDialog(mainFrame, "You found an axe! Press 'Space' to throw it. You can chop down trees or kill snakes with it.");
+                        JOptionPane.showMessageDialog(mainFrame, "You found an axe! Press 'Space' to throw it. You can chop down trees or kill snakes with it.You've got 8 swings!");
                     }
-                    player.setHasAxe(8);
+                    if(talkedToLumberjack){
+                        player.setHasAxe(30);
+                        return;
+                    }
+                    else{
+                        player.setHasAxe(8);
+                    }
 
                 }
                 if(isAdjacentToHeart()){
@@ -187,6 +195,11 @@ public class GameGUI extends JPanel implements KeyListener{
                     }else{
                         JOptionPane.showMessageDialog(mainFrame, "You need to find all the tools to fix the car and escape!");
                     }
+                }
+                if(isAdjacentToLumberjack()){
+                    JOptionPane.showMessageDialog(mainFrame, "You found the Lumberjack! He gave you his special axe!Now it's got a lifespan of 30 swings instead of 8!");
+                    talkedToLumberjack = true;
+                    player.setHasAxe(30);
                 }
                 if(isAdjacentToTool()){
                     toolsFound++;
@@ -209,6 +222,19 @@ public class GameGUI extends JPanel implements KeyListener{
         for(int i = -1; i<=1;i++){
             for(int j = -1; j<=1;j++){
                 if(tileManager.getTile(playerX+i,playerY+j) == 'C'){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean isAdjacentToLumberjack(){
+        int playerX = player.getX() / TILE_SIZE;
+        int playerY = player.getY() / TILE_SIZE;
+        for(int i = -1; i<=1;i++){
+            for(int j = -1; j<=1;j++){
+                CharacterThread characterThread =(CharacterThread) threadManager.isCharacterAtPosition(playerX+i,playerY+j);
+                if(characterThread!=null && characterThread.getCharacter() instanceof LumberJack){
                     return true;
                 }
             }

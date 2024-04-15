@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 
 import Threads.CharacterThread;
 import Threads.ThreadManager;
+import Elements.LumberJack;
 import Elements.Snake;
 
 public class TileManager {
@@ -119,11 +120,12 @@ public class TileManager {
             
             while ((line = br.readLine()) != null) {
                 for (int col = 0; col < line.length(); col++) {
+                    
                     mapTileChar[row][col] = line.charAt(col);
+
                 }
                 row++;
             }
-    
             br.close();
         } catch (Exception e) {
             System.out.println("Erro ao carregar o mapa: " + e);
@@ -137,7 +139,7 @@ public class TileManager {
         for (int worldRow = 0; worldRow < game.maxWorldRow; worldRow++) {
             for (int worldCol = 0; worldCol < game.maxWorldCol; worldCol++) {
                 char tile = threadManager.isThreadAtPosition(worldCol, worldRow)!=' ' ? threadManager.isThreadAtPosition(worldCol, worldRow) : mapTileChar[worldRow][worldCol];
-    
+                
                 int worldX = worldCol * game.TILE_SIZE;
                 int worldY = worldRow * game.TILE_SIZE;
     
@@ -148,16 +150,14 @@ public class TileManager {
                 int distance = Math.abs(playerX - worldCol) + Math.abs(playerY - worldRow);
                 if (distance <= game.VISIBILITY_RADIUS) {
                     tileImage = getTileImage(String.valueOf(tile));
-                    BufferedImage backgroundTileImage = getTileImage("."); // Imagem do terreno de fundo
+                    BufferedImage backgroundTileImage = getTileImage("."); 
                     g.drawImage(backgroundTileImage, screenX, screenY, game.TILE_SIZE, game.TILE_SIZE, null);
                 } else {
                     tileImage = getTileImage("Fog");
-                    // Define a cor de fundo como cinza para células fora do raio de visibilidade
-                    //color #3333333
+
                     g.setColor(new Color(51, 51, 51));
                     g.fillRect(screenX, screenY, game.TILE_SIZE, game.TILE_SIZE);
                 }
-                
                 g.drawImage(tileImage, screenX, screenY, game.TILE_SIZE, game.TILE_SIZE, null);
                 
             }
@@ -180,6 +180,9 @@ public class TileManager {
 
 
     public void createThreadsFromTxt(String fileName) {
+        LumberJack lumberJack = new LumberJack(53, 17, ++game.id, game);
+        CharacterThread lumberJackThread = new CharacterThread(game, lumberJack, game.id, this);
+        threadManager.addThread(lumberJackThread);
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -190,10 +193,11 @@ public class TileManager {
                 CharacterThread snakeThread = new CharacterThread(game, snake, game.id, this);
                 threadManager.addThread(snakeThread);
             }
-            threadManager.startAllThreads();
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
         }
+        
+        threadManager.startAllThreads();
     }
     
 
