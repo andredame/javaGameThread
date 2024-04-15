@@ -82,6 +82,10 @@ public class GameGUI extends JPanel implements KeyListener{
             JOptionPane.showMessageDialog(mainFrame, "You found all the tools! Go back to the car to fix it and escape!");
             firstTime = false;
         } 
+        if(player.getVidas()==0){
+            JOptionPane.showMessageDialog(mainFrame, "You died! Game Over!");
+            System.exit(0);
+        }
         super.paintComponent(g);
         tileManager.draw(g);
         player.draw(g);
@@ -145,7 +149,7 @@ public class GameGUI extends JPanel implements KeyListener{
                 break;
             case KeyEvent.VK_E:
                 if(isAdjacentToALamp()){
-                    this.VISIBILITY_RADIUS+=2;
+                    this.VISIBILITY_RADIUS+=1;
                 }
                 if( isAdjacentToAAxe()){
                     if(firstTimeAxed){

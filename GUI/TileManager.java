@@ -120,6 +120,9 @@ public class TileManager {
             
             while ((line = br.readLine()) != null) {
                 for (int col = 0; col < line.length(); col++) {
+                    if(line.charAt(col) == '5'){
+                        System.out.println(row + " " + col);
+                    }
                     mapTileChar[row][col] = line.charAt(col);
                 }
                 row++;
