@@ -34,7 +34,6 @@ public class Player extends GameCharacter{
     }
 
     public void throwAxe(){
-        System.out.println(hasAxe);
         if(hasAxe > 0){
             hasAxe--;
         }
