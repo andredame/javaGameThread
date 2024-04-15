@@ -87,7 +87,6 @@ public class CharacterThread extends Thread {
     private void takeDamage() {
         if (canTakeDamage) {
             game.getPlayer().lostLife(); 
-            System.out.println("Player lost life"+game.getPlayer().getVidas());
             canTakeDamage = false; 
             new java.util.Timer().schedule( 
                 new java.util.TimerTask() {

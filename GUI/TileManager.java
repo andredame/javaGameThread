@@ -3,6 +3,7 @@ package GUI;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,7 +14,6 @@ import javax.imageio.ImageIO;
 import Threads.CharacterThread;
 import Threads.ThreadManager;
 import Elements.GameCharacter;
-import Elements.LumberJack;
 import Elements.Snake;
 
 public class TileManager {
@@ -28,7 +28,7 @@ public class TileManager {
         mapTileChar = new char[game.maxWorldRow][game.maxWorldCol];
         this.threadManager = threadManager;
         tileImages = new HashMap<>();
-        createThreads();
+        createThreadsFromTxt("./GUI/snake.csv");
         try {
             BufferedImage treeImage = resizeImage("/assets/tree.png", 16, 16);
             BufferedImage axeImage = resizeImage("/assets/axe.png", 16, 16);
@@ -170,23 +170,28 @@ public class TileManager {
             if(threadManager.isCharacterAtPosition(x, y)==null) return mapTileChar[y][x] == '.' || mapTileChar[y][x] == 'g';
             return false;
         } else {
-            System.out.println("Out of bounds");
             return false;
         }
     }
 
-    public void createThreads(){
-        Snake snake = new Snake(5, 6, 1, game);
-        CharacterThread snakeThread = new CharacterThread(game, snake, game.id++,this);
-        threadManager.addThread(snakeThread);
-        Snake snake2 = new Snake(5, 6, 2, game);
-        CharacterThread snakeThread2 = new CharacterThread(game, snake2, game.id++,this);
-        threadManager.addThread(snakeThread2);
-        LumberJack lumberJack = new LumberJack(5, 6, 3, game);
-        CharacterThread lumberJackThread = new CharacterThread(game, lumberJack, game.id++,this);
-        threadManager.addThread(lumberJackThread);
-        threadManager.startAllThreads();
+
+    public void createThreadsFromTxt(String fileName) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] params = line.split(",");
+                int x = Integer.parseInt(params[0].trim());
+                int y = Integer.parseInt(params[1].trim());
+                Snake snake = new Snake(x, y, ++game.id, game);
+                CharacterThread snakeThread = new CharacterThread(game, snake, game.id, this);
+                threadManager.addThread(snakeThread);
+            }
+            threadManager.startAllThreads();
+        } catch (IOException e) {
+            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+        }
     }
+    
 
     public boolean foundATree(int x, int y){
         return mapTileChar[y][x] == 'T';

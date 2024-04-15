@@ -5,15 +5,12 @@ import javax.swing.*;
 public class IntroductionDialog extends JDialog {
     public IntroductionDialog(JFrame parent) {
         super(parent, "Bem-vindo ao Maze Solver", true);
-        JLabel messageLabel = new JLabel("<html>Você estava indo para a Convenção dos Programadores,<br>mas enquanto passava pela floresta da Bruxa, você caiu da montanha e ficou desacordado por alguns minutos.<br>Resgate os Algoritmos para chegar à convenção.</html>");
-        messageLabel.setHorizontalAlignment(JLabel.CENTER);
-
-        // Definindo uma fonte personalizada
-        Font font = new Font("Segoe UI", Font.PLAIN, 14);
-        messageLabel.setFont(font);
-
+        JLabel messageLabel = new JLabel("<html><div style='text-align: center; font-family: Arial; font-size: 14px;'>Você estava indo para a Convenção dos Programadores,<br>mas enquanto passava pela floresta da Bruxa, você acabou batendo o carro, devido a neblina intensa.<br> Agora você precisa encontrar as peças do carro para sair da floresta.<br>Fique longe das Cobras!<br>Para interagir com qualquer coisa no mapa, pressione E.</div></html>");
+        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        messageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(messageLabel);
-        setSize(400, 200);
+        setSize(600, 400);
         setLocationRelativeTo(parent);
     }
 }
