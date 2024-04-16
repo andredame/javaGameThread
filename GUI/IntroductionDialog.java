@@ -16,7 +16,7 @@ public class IntroductionDialog extends JDialog {
         JLabel messageLabel = new JLabel("<html><div style='text-align: center; font-family: Arial; font-size: 16px;'>" +
                                            "You were heading to the Programmers' Convention,<br>" +
                                            "but while passing through the Witch's forest, you ended up crashing your car due to intense fog.<br>" +
-                                           "Now you need to find the car parts to escape the forest.<br>" +
+                                           "<b><font color='red'>Now you need to find the car parts to escape the forest.</b></font><br>" +
                                            "<font color='red'>Stay away from the Snakes!</font><br>" +
                                            "<b>To interact with anything on the map, press E</b>.</div></html>");
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);

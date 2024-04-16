@@ -86,7 +86,7 @@ public class GameGUI extends JPanel implements KeyListener{
         } 
         if(player.getVidas()==0){
             JOptionPane.showMessageDialog(mainFrame, "You died! Game Over!");
-            System.exit(0);
+            System.exit(0);  
         }
         super.paintComponent(g);
         tileManager.draw(g);
@@ -128,7 +128,7 @@ public class GameGUI extends JPanel implements KeyListener{
     public void drawToolsFound(Graphics g) {
         g.setColor(Color.RED); 
         g.setFont(new Font("Arial", Font.BOLD, 30)); 
-        g.drawString("Tools Found: " + toolsFound, 15, 25);
+        g.drawString("Car parts: " + toolsFound, 15, 25);
     }
 
     

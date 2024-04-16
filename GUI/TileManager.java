@@ -196,7 +196,6 @@ public class TileManager {
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
         }
-        
         threadManager.startAllThreads();
     }
     
