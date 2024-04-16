@@ -65,7 +65,7 @@ public class ThreadManager {
     }
 
 
-    public char isThreadAtPosition(int x, int y) {
+    public synchronized char isThreadAtPosition(int x, int y) {
         for (Thread thread : threads.values()) {
             
             if (thread instanceof CharacterThread) {
@@ -86,7 +86,7 @@ public class ThreadManager {
         return ' ';
     }
 
-    public Thread isCharacterAtPosition(int x, int y) {
+    public synchronized Thread isCharacterAtPosition(int x, int y) {
         for (Thread thread : threads.values()) {
             if (thread instanceof CharacterThread) {
                 CharacterThread characterThread = (CharacterThread) thread;

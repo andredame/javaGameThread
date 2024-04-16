@@ -5,6 +5,7 @@ import GUI.GameGUI;
 import GUI.TileManager;
 
 public class CharacterThread extends Thread {
+    
     private GameCharacter character;
     private GameGUI game;
     private int identificador;

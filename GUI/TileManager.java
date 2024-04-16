@@ -169,7 +169,7 @@ public class TileManager {
         return mapTileChar[y][x];
     }
 
-    public boolean isWalkable(int x, int y) {
+    public synchronized boolean isWalkable(int x, int y) {
         if (x >= 0 && y < game.maxWorldRow && y >= 0 && x < game.maxWorldCol) {
             if(threadManager.isCharacterAtPosition(x, y)==null) return mapTileChar[y][x] == '.' || mapTileChar[y][x] == 'g';
             return false;
