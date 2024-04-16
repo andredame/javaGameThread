@@ -8,11 +8,9 @@ public class IntroductionDialog extends JDialog {
     public IntroductionDialog(JFrame parent) {
         super(parent, "Welcome to Maze Solver", true);
         
-        // Create a panel for the content
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        // Create a label for the message with HTML formatting
         JLabel messageLabel = new JLabel("<html><div style='text-align: center; font-family: Arial; font-size: 16px;'>" +
                                            "You were heading to the Programmers' Convention,<br>" +
                                            "but while passing through the Witch's forest, you ended up crashing your car due to intense fog.<br>" +

@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.*;
 
 import java.awt.image.*;
-//imageio
 
 import javax.swing.*;
 
@@ -13,11 +12,9 @@ import Threads.*;
 
 public class GameGUI extends JPanel implements KeyListener{
     private JFrame mainFrame;
-    // private Puzzle puzzle;
     public int VISIBILITY_RADIUS = 20; 
     
 
-    //SCREEN SETTINGS
     final int originalTileSize=16;
     final int scale=4;
     public final int TILE_SIZE = originalTileSize *scale;
@@ -26,7 +23,6 @@ public class GameGUI extends JPanel implements KeyListener{
     public final int SCREEN_WIDTH = TILE_SIZE * maxScreenCol;
     public final int SCREEN_HEIGHT = TILE_SIZE * maxScreenRow;
 
-    //world settings
     public final int maxWorldCol=66;
     public final int maxWorldRow=30;
     public final int worldWidth = TILE_SIZE * maxWorldCol;
@@ -36,7 +32,6 @@ public class GameGUI extends JPanel implements KeyListener{
     public TileManager tileManager;
     private Direction lastDirection;
     private int idIterator = 0;
-    //Threads 
     private ThreadManager threadManager;
     public Player player;
     private int toolsFound=0;
